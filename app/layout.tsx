@@ -8,7 +8,7 @@ import {Navigation} from "@/app/components/Navigation";
       }) {
         return (
           <html lang="en">
-            <body className="antialiased body-color">
+            <body className="antialiased bg-primary text-white">
               <Navigation />
               <div className="ml-48 p-5">
                 {children}

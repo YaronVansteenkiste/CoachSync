@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/card"
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
+import {ChartComponent} from "@/app/components/Chart";
 
 export default function Home() {
     return (
@@ -34,6 +35,9 @@ export default function Home() {
                     <CardHeader>
                         <CardTitle>Total Progress</CardTitle>
                     </CardHeader>
+                    <CardContent>
+                        <ChartComponent />
+                    </CardContent>
                 </Card>
             </div>
             <div className="col-span-1">

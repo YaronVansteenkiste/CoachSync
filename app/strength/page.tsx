@@ -1,9 +1,6 @@
 export default async function Page() {
     return (
-        <ul>
-            <h1>
-                Progress Chart TODO
-            </h1>
-        </ul>
+        <h1 className="text-4xl font-bold">Strength TODO</h1>
+
     )
 }

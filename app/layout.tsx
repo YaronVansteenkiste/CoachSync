@@ -1,5 +1,5 @@
 import "./globals.css";
-import {Navigation} from "@/app/components/Navigation";
+      import {Navigation} from "@/app/components/Navigation";
 
       export default function RootLayout({
         children,
@@ -10,7 +10,7 @@ import {Navigation} from "@/app/components/Navigation";
           <html lang="en">
             <body className="antialiased bg-primary text-white">
               <Navigation />
-              <div className="ml-48 p-5">
+              <div className="ml-48 children-container flex flex-col h-screen p-10">
                 {children}
               </div>
             </body>

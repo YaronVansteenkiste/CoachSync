@@ -1,9 +1,6 @@
 export default async function Page() {
     return (
-        <ul>
-            <h1>
-                Your Cardio Activity
-            </h1>
-        </ul>
+        <h1 className="text-4xl font-bold">Cardio TODO</h1>
+
     )
 }

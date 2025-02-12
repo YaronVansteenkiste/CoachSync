@@ -69,4 +69,15 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+
+  .children-container {
+    border-radius: 50px 0 0 50px;
+    z-index: 20;
+    position: relative;
+    background-color: #121217;
+  }
+  .navbar {
+    z-index: 10;
+    background-color: #1C1F26;
+  }
 }

@@ -5,14 +5,14 @@ export const paths = [
     },
     {
         name: "Cardio",
-        href: "cardio",
+        href: "/cardio",
     },
     {
         name: "Strength",
-        href: "strength",
+        href: "/strength",
     },
     {
         name: "Challenges",
-        href: "challenges",
+        href: "/challenges",
     },
 ];

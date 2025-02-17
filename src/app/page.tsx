@@ -108,40 +108,27 @@ export default function Home() {
           </div>
           <Drawer>
             <div className="flex flex-col mx-5 mb-5">
-              <Button className="flex flex-col w-full">
-                <DrawerTrigger className="w-full">Start Workout</DrawerTrigger>
-              </Button>
+              <DrawerTrigger asChild>
+                <Button className="flex flex-col w-full">Start Workout</Button>
+              </DrawerTrigger>
             </div>
             <DrawerContent>
               <DrawerHeader>
                 <DrawerTitle>Workout 1 - Bench Press</DrawerTitle>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span>Set 1:</span>
-                    <Input type="number" value={120} className="w-20" />
-                    <span>kg</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>Set 2:</span>
-                    <Input type="number" value={120} className="w-20" />
-                    <span>kg</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>Set 3:</span>
-                    <Input type="number" value={120} className="w-20" />
-                    <span>kg</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>Set 4:</span>
-                    <Input type="number" value={120} className="w-20" />
-                    <span>kg</span>
-                  </div>
+                  {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span>Set {index + 1}:</span>
+                      <Input type="number" defaultValue={120} className="w-20" />
+                      <span>kg</span>
+                    </div>
+                  ))}
                 </div>
               </DrawerHeader>
               <DrawerFooter>
                 <Button>Next</Button>
-                <DrawerClose>
-                  <Button variant="outline">Stop</Button>
+                <DrawerClose asChild>
+                  <Button>Stop</Button>
                 </DrawerClose>
               </DrawerFooter>
             </DrawerContent>

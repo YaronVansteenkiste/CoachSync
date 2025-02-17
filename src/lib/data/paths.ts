@@ -4,6 +4,10 @@ export const paths = [
         href: "/",
     },
     {
+        name: "Planner",
+        href: "/planner",
+    },
+    {
         name: "Cardio",
         href: "/cardio",
     },

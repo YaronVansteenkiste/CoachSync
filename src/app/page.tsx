@@ -15,14 +15,9 @@ import { Input } from "@/components/ui/input"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChartComponent } from "@/app/components/Chart";
+import { getTodaysExercises, getTodaysWorkout } from "./actions";
+import { exercises } from "@/db/schema";
 
-const workouts = [
-  "Bench Press: 120 kg, 4 sets of 7",
-  "Incline Dumbbell Press: 40 kg, 3 sets of 12",
-  "Barbell Rows: 100 kg, 4 sets of 10",
-  "Bicep Curls: 18 kg, 3 sets of 8",
-  "Pull-Ups: Bodyweight, 4 sets of 10",
-];
 
 const cardio = [
   {
@@ -40,7 +35,17 @@ const cardio = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const userId = "557827b2-a6e2-49b9-9016-1d3bcf6a6422";
+  const todaysWorkout = await getTodaysWorkout(userId);
+
+  const workoutWithExercises = await Promise.all(
+    todaysWorkout.map(async (workout) => ({
+      ...workout,
+      exercises: await getTodaysExercises(workout.id),
+    }))
+  );
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
@@ -97,11 +102,22 @@ export default function Home() {
             <CardTitle>Today’s Workout</CardTitle>
           </CardHeader>
           <CardContent>
-            {workouts.map((workout, index) => (
-              <Card key={index} className="dark:bg-gray-700 my-4">
-                <CardContent>{workout}</CardContent>
-              </Card>
-            ))}
+            {workoutWithExercises.length > 0 ? (
+              workoutWithExercises.map((workout) => (
+                <Card key={workout.id} className="dark:bg-gray-700 my-4">
+                  <CardContent>
+                    <p className="font-bold">{workout.name}</p>
+                    {workout.exercises.map((exercise) => (
+                      <p key={exercise.id}>
+                        {exercise.name}: {exercise.weight}kg {exercise.sets} sets of {exercise.reps} reps
+                      </p>
+                    ))}
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p>No workout found for today.</p>
+            )}
           </CardContent>
           <div className="flex flex-col mx-5">
             <Button className="w-full my-2 w-50">Edit Workout</Button>
@@ -135,6 +151,7 @@ export default function Home() {
           </Drawer>
         </Card>
       </div>
+
     </div>
   );
 }

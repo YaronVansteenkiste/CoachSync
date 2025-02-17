@@ -11,7 +11,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-primary text-white">
         <Navigation />
-        <div className="ml-48 children-container flex flex-col h-screen p-10">
+        <div className="ml-48 children-container flex flex-col p-10">
         <ThemeProvider
             attribute="class"
             defaultTheme="system"

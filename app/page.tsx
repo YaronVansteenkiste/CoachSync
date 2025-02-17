@@ -60,7 +60,7 @@ export default function Home() {
             <CardTitle>Cardio Progress</CardTitle>
             {cardio.map((workout, index) => (
               <Card key={index} className="dark:bg-gray-700 my-4">
-                <CardTitle>{workout.name}</CardTitle>
+                <CardTitle className="text-center">{workout.name}</CardTitle>
                 <CardContent>
                   <p>{workout.distance}</p>
                   {workout.time && <p>{workout.time}</p>}
@@ -77,11 +77,6 @@ export default function Home() {
                 <CardTitle>Bench Press</CardTitle>
               </CardHeader>
               <CardContent>
-                <img
-                  src="https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif"
-                  alt="Example Image"
-                  className="w-20 h-auto"
-                />
                 <p className="mt-4">You are stronger than 70% of users.</p>
               </CardContent>
             </Card>

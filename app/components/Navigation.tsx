@@ -17,9 +17,8 @@ export function Navigation() {
     return (
         <nav className="navbar h-full w-full fixed top-0 left-0 pt-5">
             <div className="w-48">
-                {/*add logo here*/}
                 <div>
-                    <h1 className="text-2xl font-bold text-white">FitTrack</h1>
+                    <h1 className="text-2xl text-center my-10 font-bold text-white">FitTrack</h1>
                 </div>
                 {paths.map(({name, href}, index) => (
                     <Link

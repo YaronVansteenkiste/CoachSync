@@ -254,23 +254,16 @@ const days = [
     "Sunday"
 ];
 function WeekPlanner() {
+    const userId = "557827b2-a6e2-49b9-9016-1d3bcf6a6422";
+    const workoutWithExercises = await Promise.all(todaysWorkout.map(async (workout)=>({
+            ...workout,
+            exercises: await getTodaysExercises(workout.id)
+        })));
     const [tasks, setTasks] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(Object.fromEntries(days.map((day)=>[
             day,
             []
         ])));
-    const [input, setInput] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
     const [selectedDay, setSelectedDay] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("Monday");
-    const addTask = ()=>{
-        if (input.trim() === "") return;
-        setTasks((prev)=>({
-                ...prev,
-                [selectedDay]: [
-                    ...prev[selectedDay],
-                    input
-                ]
-            }));
-        setInput("");
-    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "space-y-8 p-6",
         children: [
@@ -326,8 +319,6 @@ function WeekPlanner() {
                                                 className: "flex gap-2",
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
-                                                        value: input,
-                                                        onChange: (e)=>setInput(e.target.value),
                                                         placeholder: "Add a task"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/planner/page.tsx",
@@ -335,11 +326,10 @@ function WeekPlanner() {
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
-                                                        onClick: addTask,
                                                         children: "Add"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/app/planner/page.tsx",
-                                                        lineNumber: 54,
+                                                        lineNumber: 53,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
@@ -354,12 +344,12 @@ function WeekPlanner() {
                                                         children: task
                                                     }, index, false, {
                                                         fileName: "[project]/src/app/planner/page.tsx",
-                                                        lineNumber: 58,
+                                                        lineNumber: 57,
                                                         columnNumber: 41
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/src/app/planner/page.tsx",
-                                                lineNumber: 56,
+                                                lineNumber: 55,
                                                 columnNumber: 33
                                             }, this)
                                         ]

@@ -18,7 +18,7 @@ interface Workout {
 }
 
 export default async function WeekPlanner() {
-    const userId = "557827b2-a6e2-49b9-9016-1d3bcf6a6422";
+    const userId = "550e8400-e29b-41d4-a716-446655440000";
     
     const workoutsByDay: { [key: string]: Workout[] } = Object.fromEntries(
         await Promise.all(

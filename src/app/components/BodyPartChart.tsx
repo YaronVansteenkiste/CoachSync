@@ -1,13 +1,20 @@
-import React, {useRef, useEffect} from "react";
+import React, { useRef, useEffect } from "react";
 import * as d3 from "d3";
 
-const data = [
-    {bodyPart: "arms", percentage: 20},
-    {bodyPart: "chest", percentage: 20},
-    {bodyPart: "abs", percentage: 20},
-    {bodyPart: "legs", percentage: 20},
-    {bodyPart: "shoulders", percentage: 10},
+interface BodyPartData {
+    bodyPart: string;
+    percentage: number;
+}
+
+const data: BodyPartData[] = [
+    { bodyPart: "arms", percentage: 20 },
+    { bodyPart: "chest", percentage: 20 },
+    { bodyPart: "abs", percentage: 20 },
+    { bodyPart: "legs", percentage: 20 },
+    { bodyPart: "shoulders", percentage: 20 },
 ];
+
+const maxWidthFactor = 1.5;
 
 const BodyPartChart = () => {
     const ref = useRef<SVGSVGElement | null>(null);
@@ -17,12 +24,19 @@ const BodyPartChart = () => {
         const width = 400;
         const height = 600;
 
-        svg.attr("width", width).attr("height", height);
+        svg.attr("width", width).attr("height", height).html("");
 
-        // Add gradient definition
-        const defs = svg.append("defs");
+        const widthScale = d3
+            .scaleLinear()
+            .domain([0, 20, 100])
+            .range([0.5, 1, maxWidthFactor]);
 
-        // Human body drawing
+        const getColor = (d: BodyPartData) => {
+            if (d.percentage < 20) return "#ff4d4d"; // Red for undertrained
+            if (d.percentage > 20) return "#ffff4d"; // Yellow for overtrained
+            return "#4dff4d"; // Green for optimal
+        };
+
         const body = svg.append("g").attr("transform", "translate(200,80)");
 
         // Head
@@ -30,211 +44,142 @@ const BodyPartChart = () => {
             .attr("cx", 0)
             .attr("cy", 0)
             .attr("r", 30)
+            .attr("fill", "#000000")
             .attr("stroke", "#333")
             .attr("stroke-width", 2);
 
         // Shoulders
+        const shoulderData = data.find((d) => d.bodyPart === "shoulders")!;
+        const shoulderWidth = 60 * widthScale(shoulderData.percentage);
         body.append("path")
+            .datum(shoulderData)
             .attr("d", `
-  M -60 40 
-  Q 0 20 60 40
-  L 50 80
-  Q 25 90 0 100
-  Q -25 90 -50 80
-  Z
-`)
-            .attr("fill", "#000000")
+                M -${shoulderWidth} 40 
+                Q 0 20 ${shoulderWidth} 40
+                L ${shoulderWidth - 10} 80
+                Q 25 90 0 100
+                Q -25 90 -${shoulderWidth - 10} 80
+                Z
+            `)
+            .attr("fill", getColor)
             .attr("stroke", "#333")
             .attr("stroke-width", 2)
-            .attr("class", "chest");
+            .on("mouseover", function(event, d) {
+                d3.select("#tooltip")
+                    .style("opacity", 1)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY + 10}px`)
+                    .html(`${d.bodyPart}: ${d.percentage}%`);
+            })
+            .on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
 
-        // Torso
-// Torso (smaller)
+        // Chest
+        const chestData = data.find((d) => d.bodyPart === "chest")!;
+        const torsoWidth = 40 * widthScale(chestData.percentage);
         body.append("path")
+            .datum(chestData)
             .attr("d", `
-    M -40 80 
-    L 40 80
-    L 50 140
-    Q 30 160 0 180
-    Q -30 160 -50 140
-    Z
-    `)
-            .attr("fill", "#000000")
+                M -${torsoWidth} 80 
+                L ${torsoWidth} 80
+                L ${torsoWidth + 10} 140
+                Q 30 160 0 180
+                Q -30 160 -${torsoWidth + 10} 140
+                Z
+            `)
+            .attr("fill", getColor)
             .attr("stroke", "#333")
-            .attr("stroke-width", 2);
+            .attr("stroke-width", 2)
+            .on("mouseover", function(event, d) {
+                d3.select("#tooltip")
+                    .style("opacity", 1)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY + 10}px`)
+                    .html(`${d.bodyPart}: ${d.percentage}%`);
+            })
+            .on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
 
-        // Arms with separated forearm and upper arm
+        // Arms
+        const armsData = data.find((d) => d.bodyPart === "arms")!;
         const armPath = (side: number) => {
-            const upperArm = `
-                M ${side * 60} 40
-                C ${side * 80} 60, ${side * 100} 100, ${side * 90} 140
-                L ${side * 80} 160
-                Q ${side * 70} 170, ${side * 60} 150
+            const widthFactor = widthScale(armsData.percentage);
+            return `
+                M ${side * (60 * widthFactor)} 40
+                C ${side * (80 * widthFactor)} 60, ${side * (100 * widthFactor)} 100, ${side * (90 * widthFactor)} 140
+                L ${side * (80 * widthFactor)} 160
+                Q ${side * (70 * widthFactor)} 170, ${side * (60 * widthFactor)} 150
                 Z`;
-
-            const forearm = `
-                M ${side * 90} 140
-                L ${side * 80} 160
-                Q ${side * 70} 200, ${side * 50} 210
-                L ${side * 40} 200
-                Q ${side * 60} 180, ${side * 70} 160
-                Z`;
-
-            return {upperArm, forearm};
         };
 
-        // Right arm
-        body.append("path")
-            .attr("d", armPath(1).upperArm)
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "arm");
-
-        body.append("path")
-            .attr("d", armPath(1).forearm)
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "arm");
-
-        // Left arm
-        body.append("path")
-            .attr("d", armPath(-1).upperArm)
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "arm");
-
-        body.append("path")
-            .attr("d", armPath(-1).forearm)
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "arm");
-
-        // Legs
-        const legPath = (side: number) => `
-            M ${side * 30} 200 
-            L ${side * 40} 300
-            L ${side * 35} 420
-            Q ${side * 30} 350, ${side * 20} 320
-            Z`;
-
-        body.append("path")
-            .attr("d", legPath(1))
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "leg calf");
-
-        body.append("path")
-            .attr("d", legPath(-1))
-            .attr("fill", "#000000")
-            .attr("stroke", "#333")
-            .attr("class", "leg calf");
-
-        // Interactive labels
-        data.forEach((part) => {
-            const element = svg.append("g")
-                .attr("class", "label")
-                .attr("transform", () => {
-                    switch (part.bodyPart) {
-                        case 'arms':
-                            return 'translate(290, 200)';
-                        case 'chest':
-                            return 'translate(150, 120)';
-                        case 'abs':
-                            return 'translate(150, 260)';
-                        case 'legs':
-                            return 'translate(200, 450)';
-                        case 'shoulders':
-                            return 'translate(200, 60)';
-                        default:
-                            return 'translate(0,0)';
-                    }
+        [1, -1].forEach((side) => {
+            body.append("path")
+                .datum(armsData)
+                .attr("d", armPath(side))
+                .attr("fill", getColor)
+                .attr("stroke", "#333")
+                .on("mouseover", function(event, d) {
+                    d3.select("#tooltip")
+                        .style("opacity", 1)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`)
+                        .html(`${d.bodyPart}: ${d.percentage}%`);
                 })
-                .style("cursor", "pointer")
-                .on("mouseover", function () {
-                    d3.select(this).select("text").transition().style("font-size", "24px");
-                    highlightBodyPart(part.bodyPart);
-                })
-                .on("mouseout", function () {
-                    d3.select(this).select("text").transition().style("font-size", "18px");
-                    resetHighlight();
-                });
-
-            element.append("rect")
-                .attr("width", 100)
-                .attr("height", 40)
-                .attr("fill", "#ffffff")
-                .attr("rx", 10)
-                .style("opacity", 0.9)
-                .style("filter", "url(#dropShadow)");
-
-            element.append("text")
-                .attr("x", 50)
-                .attr("y", 25)
-                .attr("text-anchor", "middle")
-                .style("font-family", "Arial")
-                .style("font-size", "18px")
-                .style("fill", "#4a90e2")
-                .text(`${part.percentage}%`);
+                .on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
         });
 
-        // Add shadow filter
-        const filter = defs.append("filter")
-            .attr("id", "dropShadow")
-            .attr("height", "130%");
-        filter.append("feGaussianBlur")
-            .attr("in", "SourceAlpha")
-            .attr("stdDeviation", 2)
-            .attr("result", "blur");
-        filter.append("feOffset")
-            .attr("in", "blur")
-            .attr("dx", 2)
-            .attr("dy", 2)
-            .attr("result", "offsetBlur");
-        const feMerge = filter.append("feMerge");
-        feMerge.append("feMergeNode").attr("in", "offsetBlur");
-        feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+        // Legs
+        const legsData = data.find((d) => d.bodyPart === "legs")!;
+        const legWidth = 30 * widthScale(legsData.percentage);
+        const legPath = (side: number) => `
+            M ${side * 20} 170 
+            L ${side * (legWidth + 20)} 220
+            L ${side * legWidth} 370
+            Q ${side * legWidth} 370, ${side * (legWidth - 10)} 290
+            Z`;
 
-        // Highlight functions
-        const highlightBodyPart = (part: string) => {
-            body.selectAll("*").transition().style("opacity", 0.3);
-            switch (part) {
-                case 'arms':
-                    body.selectAll(".arm").transition()
-                        .style("opacity", 1).style("fill", "#4a90e2");
-                    break;
-                case 'chest':
-                    body.select("path").transition()
-                        .style("opacity", 1).style("fill", "#4a90e2");
-                    break;
-                case 'abs':
-                    body.select("path").transition()
-                        .style("opacity", 1).style("fill", "#7c4dff");
-                    break;
-                case 'legs':
-                    body.selectAll(".leg").transition()
-                        .style("opacity", 1).style("fill", "#7c4dff");
-                    break;
-                case 'shoulders':
-                    body.selectAll(".shoulder").transition()
-                        .style("opacity", 1).style("fill", "#00c853");
-                    break;
-            }
-        };
-
-        const resetHighlight = () => {
-            body.selectAll("*")
-                .transition()
-                .style("opacity", 1)
-                .style("fill", "#000000");
-        };
+        [1, -1].forEach((side) => {
+            body.append("path")
+                .datum(legsData)
+                .attr("d", legPath(side))
+                .attr("fill", getColor)
+                .attr("stroke", "#333")
+                .on("mouseover", function(event, d) {
+                    d3.select("#tooltip")
+                        .style("opacity", 1)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY + 10}px`)
+                        .html(`${d.bodyPart}: ${d.percentage}%`);
+                })
+                .on("mouseout", () => d3.select("#tooltip").style("opacity", 0));
+        });
 
     }, []);
 
-    return <svg ref={ref} style={{
-        fontFamily: 'Arial',
-        borderRadius: '20px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-    }}/>;
+    return (
+        <div style={{ position: "relative" }}>
+            <svg
+                ref={ref}
+                style={{
+                    fontFamily: "Arial",
+                    borderRadius: "20px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                }}
+            />
+            <div
+                id="tooltip"
+                style={{
+                    position: "absolute",
+                    opacity: 0,
+                    background: "#fff",
+                    border: "1px solid #333",
+                    borderRadius: "4px",
+                    padding: "8px",
+                    pointerEvents: "none",
+                    fontFamily: "Arial",
+                    transition: "opacity 0.2s",
+                }}
+            />
+        </div>
+    );
 };
 
 export default BodyPartChart;

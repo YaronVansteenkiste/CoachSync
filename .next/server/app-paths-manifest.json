@@ -1,7 +1,6 @@
 {
-  "/cardio/page": "app/cardio/page.js",
+  "/page": "app/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/strength/page": "app/strength/page.js",
-  "/planner/page": "app/planner/page.js",
-  "/page": "app/page.js"
+  "/challenges/page": "app/challenges/page.js"
 }

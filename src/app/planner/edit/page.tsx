@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchWorkout } from "@/app/actions/fetchWorkout";
 import { handleUpdate } from "@/app/actions/handleUpdate";
 import { addExercise } from "@/app/actions/addExercise";
+import { removeExercise } from "@/app/actions/removeExercise";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,16 @@ export default function EditWorkoutPage() {
         }
     }
 
+  async function handleRemoveExercise(id) {
+    try {
+        await removeExercise(id);
+        setExercisesData((prev) => prev.filter((ex) => ex.id !== id));
+    } catch (error) {
+        console.error('Error removing exercise:', error);
+        alert('Failed to remove exercise from the database');
+    }
+}
+
     return (
         <div className="max-w-5xl mx-auto p-4">
             <h1 className="text-2xl font-bold mb-6 text-center">Edit {WORKOUT_NAME} Workout</h1>
@@ -94,6 +105,9 @@ export default function EditWorkoutPage() {
                                         onChange={(e) => updateExercise(exercise.id, { reps: e.target.value })}
                                     />
                                 </div>
+                                <Button onClick={() => handleRemoveExercise(exercise.id)} className="w-full mt-2">
+                                    Remove Exercise
+                                </Button>
                             </CardContent>
                         </Card>
                     ))}

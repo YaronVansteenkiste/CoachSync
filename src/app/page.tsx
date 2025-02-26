@@ -4,7 +4,6 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -15,8 +14,8 @@ import { Input } from "@/components/ui/input"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChartComponent } from "@/app/components/Chart";
-import { getTodaysExercises, getTodaysWorkout } from "./actions";
-import { exercises } from "@/db/schema";
+import { getTodaysWorkout } from "./actions/getTodaysWorkout";
+import { getTodaysExercises } from "./actions/getTodaysExercises";
 
 
 const cardio = [
@@ -36,7 +35,7 @@ const cardio = [
 ];
 
 export default async function Home() {
-  const userId = "557827b2-a6e2-49b9-9016-1d3bcf6a6422";
+  const userId = "550e8400-e29b-41d4-a716-446655440000";
   const todaysWorkout = await getTodaysWorkout(userId);
 
   const workoutWithExercises = await Promise.all(

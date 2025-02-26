@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, real, uuid } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, real, uuid, primaryKey } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -15,14 +15,14 @@ export const workouts = pgTable("workouts", {
   name: text("name").notNull(),
   createdAt: text("created_at").default("now()"),
   durationMinutes: integer("duration_minutes").notNull().default(60),
-  intensity: text("intensity").notNull().default("Medium"), 
+  intensity: text("intensity").notNull().default("Medium"),
 });
 
 export const exercises = pgTable("exercises", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
-  category: text("category").notNull(), 
-  equipment: text("equipment").notNull(), 
+  category: text("category").notNull(),
+  equipment: text("equipment").notNull(),
 });
 
 export const workoutExercises = pgTable("workout_exercises", {

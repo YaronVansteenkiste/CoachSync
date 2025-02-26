@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -21,6 +22,7 @@ interface Workout {
 
 export function WeekPlannerUI({ workoutsByDay }: { workoutsByDay: { [key: string]: Workout[] } }) {
     const [selectedDay, setSelectedDay] = useState("Monday");
+    const router = useRouter();
 
     return (
         <div className="space-y-8 p-6">
@@ -55,6 +57,12 @@ export function WeekPlannerUI({ workoutsByDay }: { workoutsByDay: { [key: string
                                                 </li>
                                             ))}
                                         </ul>
+                                        <button
+                                            onClick={() => router.push(`/planner/edit?day=${day}`)}
+                                            className="mt-2 p-2 bg-blue-500 text-white rounded"
+                                        >
+                                            Edit
+                                        </button>
                                     </div>
                                 ))}
                                 {!workoutsByDay[day]?.length && (

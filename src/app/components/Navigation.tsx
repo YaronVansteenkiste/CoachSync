@@ -1,10 +1,10 @@
 "use client";
 
-import {paths} from "@/lib/data/paths";
-import {cn} from "@/lib/utils";
+import { paths } from "@/lib/data/paths";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {useEffect} from "react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export function Navigation() {
     const pathname = usePathname();
@@ -20,19 +20,20 @@ export function Navigation() {
                 <div>
                     <h1 className="text-2xl text-center my-10 font-bold text-white">FitTrack</h1>
                 </div>
-                {paths.map(({name, href}, index) => (
+                {paths.map(({ name, href, icon: Icon }, index) => (
                     <Link
                         key={index}
                         href={href}
                         className={cn(
-                            "block py-4 px-12 font-thin hover:bg-gray-700 dark:hover:bg-gray-600",
-                            pathname === href && "font-bold",
+                            "flex items-center py-4 px-12 font-thin hover:bg-gray-700 dark:hover:bg-gray-600",
+                            pathname === href && "font-bold"
                         )}
                     >
+                        {Icon && <Icon className="w-6 h-6 mr-2" />}
                         {name}
                     </Link>
                 ))}
             </div>
         </nav>
     );
-};
+}

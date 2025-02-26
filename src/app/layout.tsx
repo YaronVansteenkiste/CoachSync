@@ -1,25 +1,43 @@
+'use client'
+import { useState, useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Navigation } from "@/app/components/Navigation";
+import { MobileNavi } from "@/app/components/MobileNavigation";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 920);
+    };
+
+    handleResize(); // Set initial value
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-primary text-white">
-        <Navigation />
-        <div className="ml-48 children-container flex flex-col p-10">
-        <ThemeProvider
+        {isMobile ? <MobileNavi /> : <Navigation />}
+        <div className={isMobile ? "w-full bg-dark mb-44 p-4" : "ml-48 children-container flex flex-col p-10"}>
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           >
-          {children}
-        </ThemeProvider>
+            {children}
+          </ThemeProvider>
         </div>
       </body>
     </html>

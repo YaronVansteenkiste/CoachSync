@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchWorkout } from "@/app/actions/fetchWorkout";
 import { handleUpdate } from "@/app/actions/handleUpdate";
+import { addExercise } from "@/app/actions/addExercise"; // Import the new action
 
 const USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 
@@ -14,6 +15,7 @@ export default function EditWorkoutPage() {
     const [workoutId, setWorkoutId] = useState(null);
     const [exercisesData, setExercisesData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [newExerciseId, setNewExerciseId] = useState(''); // State for new exercise ID
 
     useEffect(() => {
         async function loadWorkout() {
@@ -38,6 +40,16 @@ export default function EditWorkoutPage() {
             );
         } catch (error) {
             console.error('Error updating exercise:', error);
+        }
+    }
+
+    async function handleAddExercise() {
+        try {
+            const newExercise = await addExercise(workoutId, newExerciseId);
+            setExercisesData((prev) => [...prev, newExercise]);
+            setNewExerciseId(''); // Clear the input field
+        } catch (error) {
+            console.error('Error adding exercise:', error);
         }
     }
 
@@ -81,6 +93,18 @@ export default function EditWorkoutPage() {
                     </div>
                 ))
             )}
+            <div className="mt-4">
+                <label className="block text-sm font-medium">Add Exercise by ID</label>
+                <input
+                    type="text"
+                    value={newExerciseId}
+                    onChange={(e) => setNewExerciseId(e.target.value)}
+                    className="w-full p-2 border rounded"
+                />
+                <button onClick={handleAddExercise} className="w-full bg-green-500 text-white p-2 rounded mt-2">
+                    Add Exercise
+                </button>
+            </div>
             <button onClick={() => router.push('/planner')} className="w-full bg-blue-500 text-white p-2 rounded mt-4">
                 Save & Go Back
             </button>

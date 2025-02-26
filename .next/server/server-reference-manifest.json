@@ -55,10 +55,10 @@
         "app/planner/page": "rsc"
       }
     },
-    "607e13171fab6f1b30c8726c25c0a1c5b4c7ff2052": {
+    "60dccf7a0eeedd2a50846a973d2bc747bf212f1512": {
       "workers": {
         "app/planner/edit/page": {
-          "moduleId": "[project]/.next-internal/server/app/planner/edit/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/fetchWorkout.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/handleUpdate.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/planner/edit/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/addExercise.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/handleUpdate.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/fetchWorkout.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
           "async": false
         }
       },
@@ -69,7 +69,18 @@
     "60e310a2c77ef62637560993283fc63efc20da2107": {
       "workers": {
         "app/planner/edit/page": {
-          "moduleId": "[project]/.next-internal/server/app/planner/edit/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/fetchWorkout.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/handleUpdate.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/planner/edit/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/addExercise.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/handleUpdate.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/fetchWorkout.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/planner/edit/page": "action-browser"
+      }
+    },
+    "607e13171fab6f1b30c8726c25c0a1c5b4c7ff2052": {
+      "workers": {
+        "app/planner/edit/page": {
+          "moduleId": "[project]/.next-internal/server/app/planner/edit/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/addExercise.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE1 => \"[project]/src/app/actions/handleUpdate.ts [app-rsc] (ecmascript)\", ACTIONS_MODULE2 => \"[project]/src/app/actions/fetchWorkout.ts [app-rsc] (ecmascript)\" } [app-rsc] (ecmascript)",
           "async": false
         }
       },

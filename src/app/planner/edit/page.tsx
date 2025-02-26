@@ -1,10 +1,13 @@
-'use client'
+'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { fetchWorkout } from "@/app/actions/fetchWorkout";
 import { handleUpdate } from "@/app/actions/handleUpdate";
-import { addExercise } from "@/app/actions/addExercise"; // Import the new action
+import { addExercise } from "@/app/actions/addExercise";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 
@@ -15,7 +18,7 @@ export default function EditWorkoutPage() {
     const [workoutId, setWorkoutId] = useState(null);
     const [exercisesData, setExercisesData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [newExerciseId, setNewExerciseId] = useState(''); // State for new exercise ID
+    const [newExerciseId, setNewExerciseId] = useState('');
 
     useEffect(() => {
         async function loadWorkout() {
@@ -47,67 +50,69 @@ export default function EditWorkoutPage() {
         try {
             const newExercise = await addExercise(workoutId, newExerciseId);
             setExercisesData((prev) => [...prev, newExercise]);
-            setNewExerciseId(''); // Clear the input field
+            setNewExerciseId('');
         } catch (error) {
             console.error('Error adding exercise:', error);
         }
     }
 
     return (
-        <div className="max-w-md mx-auto p-4">
-            <h1 className="text-xl font-bold mb-4">Edit {WORKOUT_NAME} Workout</h1>
+        <div className="max-w-5xl mx-auto p-4">
+            <h1 className="text-2xl font-bold mb-6 text-center">Edit {WORKOUT_NAME} Workout</h1>
             {loading ? (
-                <p>Loading...</p>
+                <p className="text-center">Loading...</p>
             ) : (
-                exercisesData.map((exercise) => (
-                    <div key={exercise.id} className="space-y-4 border-b pb-4 mb-4">
-                        <h2 className="text-lg font-semibold">{exercise.name}</h2>
-                        <p className="text-sm text-gray-500">Category: {exercise.category} | Equipment: {exercise.equipment}</p>
-                        <div>
-                            <label className="block text-sm font-medium">Weight</label>
-                            <input
-                                type="number"
-                                value={exercise.weight ?? ''}
-                                onChange={(e) => updateExercise(exercise.id, { weight: e.target.value })}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium">Sets</label>
-                            <input
-                                type="number"
-                                value={exercise.sets ?? ''}
-                                onChange={(e) => updateExercise(exercise.id, { sets: e.target.value })}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium">Reps</label>
-                            <input
-                                type="number"
-                                value={exercise.reps ?? ''}
-                                onChange={(e) => updateExercise(exercise.id, { reps: e.target.value })}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-                    </div>
-                ))
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {exercisesData.map((exercise) => (
+                        <Card key={exercise.id}>
+                            <CardHeader>
+                                <CardTitle>{exercise.name}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-sm text-gray-500">Category: {exercise.category} | Equipment: {exercise.equipment}</p>
+                                <div className="mt-2">
+                                    <label className="block text-sm font-medium">Weight</label>
+                                    <Input
+                                        type="number"
+                                        value={exercise.weight ?? ''}
+                                        onChange={(e) => updateExercise(exercise.id, { weight: e.target.value })}
+                                    />
+                                </div>
+                                <div className="mt-2">
+                                    <label className="block text-sm font-medium">Sets</label>
+                                    <Input
+                                        type="number"
+                                        value={exercise.sets ?? ''}
+                                        onChange={(e) => updateExercise(exercise.id, { sets: e.target.value })}
+                                    />
+                                </div>
+                                <div className="mt-2">
+                                    <label className="block text-sm font-medium">Reps</label>
+                                    <Input
+                                        type="number"
+                                        value={exercise.reps ?? ''}
+                                        onChange={(e) => updateExercise(exercise.id, { reps: e.target.value })}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
             )}
-            <div className="mt-4">
+            <div className="mt-6">
                 <label className="block text-sm font-medium">Add Exercise by ID</label>
-                <input
+                <Input
                     type="text"
                     value={newExerciseId}
                     onChange={(e) => setNewExerciseId(e.target.value)}
-                    className="w-full p-2 border rounded"
                 />
-                <button onClick={handleAddExercise} className="w-full bg-green-500 text-white p-2 rounded mt-2">
+                <Button onClick={handleAddExercise} className="w-full mt-2">
                     Add Exercise
-                </button>
+                </Button>
             </div>
-            <button onClick={() => router.push('/planner')} className="w-full bg-blue-500 text-white p-2 rounded mt-4">
+            <Button onClick={() => router.push('/planner')} className="w-full mt-4">
                 Save & Go Back
-            </button>
+            </Button>
         </div>
     );
 }

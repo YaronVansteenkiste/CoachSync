@@ -19,7 +19,8 @@ import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
 import { Toaster, toast } from "sonner";
 import {useRouter} from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
+import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
+import { getExerciseIdByName } from "./actions/getWorkoutExercises";
 
 const cardio = [
   {
@@ -54,14 +55,6 @@ export default function Home() {
     fetchData();
   }, [userId]);
 
-  const refreshWorkoutRoutine = async () => {
-    const data = await fetchWorkoutData(userId);
-    setWorkoutWithExercises(data);
-    if (data.length > 0) {
-      setCurrentExercise(data[0].exercises[0]);
-    }
-  };
-
   const handleWeightChange = (weight) => {
     const updatedExercise = { ...currentExercise, weight: parseFloat(weight) };
     setCurrentExercise(updatedExercise);
@@ -71,7 +64,7 @@ export default function Home() {
         return {
           ...workout,
           exercises: workout.exercises.map((exercise) =>
-            exercise.id === currentExercise.id ? updatedExercise : exercise
+              exercise.id === currentExercise.id ? updatedExercise : exercise
           ),
         };
       }
@@ -79,10 +72,6 @@ export default function Home() {
     });
 
     setWorkoutWithExercises(updatedWorkoutWithExercises);
-
-    if (parseFloat(weight) > currentExercise.weight) {
-      toast.success(`New PR is HIT! You have lifted ${weight}kg, which is a new personal record!`);
-    }
   };
 
   const handleRepsChange = (reps) => {
@@ -94,7 +83,7 @@ export default function Home() {
         return {
           ...workout,
           exercises: workout.exercises.map((exercise) =>
-            exercise.id === currentExercise.id ? updatedExercise : exercise
+              exercise.id === currentExercise.id ? updatedExercise : exercise
           ),
         };
       }
@@ -109,6 +98,21 @@ export default function Home() {
       weight: currentExercise.weight,
       reps: currentExercise.reps,
     });
+    console.log(currentExercise.name);
+    const exerciseId = await getExerciseIdByName(currentExercise.name);
+
+    console.log(currentExercise.id);
+
+    await createOrUpdatePersonalRecord({
+      userId,
+      exerciseId: exerciseId,
+      maxWeight: currentExercise.weight,
+      maxReps: currentExercise.reps,
+    });
+
+    if (currentExercise.weight > (currentExercise.previousWeight || 0)) {
+      toast.success(`New PR HIT! ${currentExercise.weight}kg is a new record!`);
+    }
 
     const currentWorkout = workoutWithExercises[currentExerciseIndex];
     const nextExerciseIndex = currentWorkout.exercises.indexOf(currentExercise) + 1;
@@ -116,8 +120,9 @@ export default function Home() {
     if (nextExerciseIndex < currentWorkout.exercises.length) {
       setCurrentExercise(currentWorkout.exercises[nextExerciseIndex]);
     } else if (currentExerciseIndex < workoutWithExercises.length - 1) {
-      setCurrentExerciseIndex(currentExerciseIndex + 1);
-      setCurrentExercise(workoutWithExercises[currentExerciseIndex + 1].exercises[0]);
+      const nextWorkoutIndex = currentExerciseIndex + 1;
+      setCurrentExerciseIndex(nextWorkoutIndex);
+      setCurrentExercise(workoutWithExercises[nextWorkoutIndex].exercises[0]);
     } else {
       alert("Workout complete!");
     }

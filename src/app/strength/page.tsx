@@ -16,6 +16,8 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import {useEffect, useState} from "react";
+import {getPersonalRecords} from "@/app/actions/getPersonalRecords";
 
 const chartData = [
     {subject: "Shoulders", strength: 80},
@@ -34,6 +36,19 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Page() {
+
+        const [personalRecords, setPersonalRecords] = useState([]);
+
+        useEffect(() => {
+            async function fetchPersonalRecords() {
+                const userId = "550e8400-e29b-41d4-a716-446655440000";
+                const records = await getPersonalRecords(userId);
+                setPersonalRecords(records);
+            }
+
+            fetchPersonalRecords();
+        }, []);
+
     return (
         <>
             <h1 className="text-4xl font-bold">Strength Dashboard</h1>
@@ -98,28 +113,18 @@ export default function Page() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <Card>
-                            <CardContent className="p-4">
-                                <h3 className="text-lg font-medium">Barbell Rows</h3>
-                                <p className="text-2xl font-bold">120kg</p>
-                                <p className="text-green-500">1Y +3.1%</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-4">
-                                <h3 className="text-lg font-medium">Incline DB Press</h3>
-                                <p className="text-2xl font-bold">50kg</p>
-                                <p className="text-green-500">1Y +1.5%</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-4">
-                                <h3 className="text-lg font-medium">Bulgarian Split Squat</h3>
-                                <p className="text-2xl font-bold">180kg</p>
-                                <p className="text-green-500">1Y +6.3%</p>
-                            </CardContent>
-                        </Card>
+                        {personalRecords.map(record => (
+                            <Card key={record.id}>
+                                <CardContent className="p-4">
+                                    <h3 className="text-lg font-medium">{record.exerciseName}</h3>
+                                    <p className="text-2xl font-bold">{record.maxWeight}kg</p>
+                                    <p className="text-lg">{record.maxReps} reps</p>
+                                    <p className="text-muted-foreground">{record.achievedAt}</p>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
+
                 </div>
             </div>
         </>

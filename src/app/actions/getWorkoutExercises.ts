@@ -16,3 +16,15 @@ export async function getWorkoutExercises(workoutId: number) {
     .where(eq(workoutExercises.workoutId, workoutId))
     .innerJoin(exercises, eq(workoutExercises.exerciseId, exercises.id));
 }
+
+
+export async function getExerciseIdByName(exerciseName: string) {
+    const exercise = await db
+        .select({ id: exercises.id })
+        .from(exercises)
+        .where(eq(exercises.name, exerciseName))
+        .limit(1)
+        .then(exercises => exercises[0]);
+
+    return exercise ? exercise.id : null;
+}

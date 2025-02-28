@@ -1,4 +1,4 @@
-// src/app/actions/fetchWorkoutData.ts
+'use server';
 import { getTodaysWorkout } from "./getTodaysWorkout";
 import { getWorkoutExercises } from "./getWorkoutExercises";
 

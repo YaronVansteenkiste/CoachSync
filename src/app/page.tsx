@@ -1,3 +1,5 @@
+'use client'
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,14 +11,12 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input"
-
-
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChartComponent } from "@/app/components/Chart";
-import { getTodaysWorkout } from "./actions/getTodaysWorkout";
-import { getTodaysExercises } from "./actions/getTodaysExercises";
-
+import { fetchWorkoutData } from "./actions/fetchWorkoutData";
+import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
+import { Toaster, toast } from "sonner";
 
 const cardio = [
   {
@@ -34,16 +34,91 @@ const cardio = [
   },
 ];
 
-export default async function Home() {
+export default function Home() {
   const userId = "550e8400-e29b-41d4-a716-446655440000";
-  const todaysWorkout = await getTodaysWorkout(userId);
+  const [workoutWithExercises, setWorkoutWithExercises] = useState([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [currentExercise, setCurrentExercise] = useState(null);
 
-  const workoutWithExercises = await Promise.all(
-    todaysWorkout.map(async (workout) => ({
-      ...workout,
-      exercises: await getTodaysExercises(workout.id),
-    }))
-  );
+  useEffect(() => {
+    async function fetchData() {
+      const data = await fetchWorkoutData(userId);
+      setWorkoutWithExercises(data);
+      if (data.length > 0) {
+        setCurrentExercise(data[0].exercises[0]);
+      }
+    }
+    fetchData();
+  }, [userId]);
+
+  const refreshWorkoutRoutine = async () => {
+    const data = await fetchWorkoutData(userId);
+    setWorkoutWithExercises(data);
+    if (data.length > 0) {
+      setCurrentExercise(data[0].exercises[0]);
+    }
+  };
+
+  const handleWeightChange = (weight) => {
+    const updatedExercise = { ...currentExercise, weight: parseFloat(weight) };
+    setCurrentExercise(updatedExercise);
+
+    const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
+      if (index === currentExerciseIndex) {
+        return {
+          ...workout,
+          exercises: workout.exercises.map((exercise) =>
+            exercise.id === currentExercise.id ? updatedExercise : exercise
+          ),
+        };
+      }
+      return workout;
+    });
+
+    setWorkoutWithExercises(updatedWorkoutWithExercises);
+
+    if (parseFloat(weight) > currentExercise.weight) {
+      toast.success(`New PR is HIT! You have lifted ${weight}kg, which is a new personal record!`);
+    }
+  };
+
+  const handleRepsChange = (reps) => {
+    const updatedExercise = { ...currentExercise, reps };
+    setCurrentExercise(updatedExercise);
+
+    const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
+      if (index === currentExerciseIndex) {
+        return {
+          ...workout,
+          exercises: workout.exercises.map((exercise) =>
+            exercise.id === currentExercise.id ? updatedExercise : exercise
+          ),
+        };
+      }
+      return workout;
+    });
+
+    setWorkoutWithExercises(updatedWorkoutWithExercises);
+  };
+
+  const handleNext = async () => {
+    await updateWorkoutExercise(currentExercise.id, {
+      weight: currentExercise.weight,
+      reps: currentExercise.reps,
+    });
+
+    const currentWorkout = workoutWithExercises[currentExerciseIndex];
+    const nextExerciseIndex = currentWorkout.exercises.indexOf(currentExercise) + 1;
+
+    if (nextExerciseIndex < currentWorkout.exercises.length) {
+      setCurrentExercise(currentWorkout.exercises[nextExerciseIndex]);
+    } else if (currentExerciseIndex < workoutWithExercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+      setCurrentExercise(workoutWithExercises[currentExerciseIndex + 1].exercises[0]);
+    } else {
+      alert("Workout complete!");
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
@@ -62,15 +137,17 @@ export default async function Home() {
         <Card>
           <CardHeader>
             <CardTitle>Cardio Progress</CardTitle>
-            {cardio.map((workout, index) => (
-              <Card key={index} className="dark:bg-gray-700 my-4">
-                <CardTitle className="text-center">{workout.name}</CardTitle>
-                <CardContent>
-                  <p>{workout.distance}</p>
-                  {workout.time && <p>{workout.time}</p>}
-                </CardContent>
-              </Card>
-            ))}
+            <>
+              {cardio.map((workout, index) => (
+                <Card key={index} className="dark:bg-gray-700 my-4">
+                  <CardTitle className="text-center">{workout.name}</CardTitle>
+                  <CardContent>
+                    <p>{workout.distance}</p>
+                    {workout?.time && <p>{workout.time}</p>}
+                  </CardContent>
+                </Card>
+              ))}
+            </>
           </CardHeader>
         </Card>
         <Card>
@@ -129,19 +206,33 @@ export default async function Home() {
             </div>
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle>Workout 1 - Bench Press</DrawerTitle>
+                <DrawerTitle>
+                  {currentExercise ? `${currentExercise.name}` : "Loading..."}
+                </DrawerTitle>
                 <div className="space-y-2">
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span>Set {index + 1}:</span>
-                      <Input type="number" defaultValue={120} className="w-20" />
-                      <span>kg</span>
-                    </div>
-                  ))}
+                  <div className="flex items-center gap-2">
+                    <span>Weight:</span>
+                    <Input
+                      type="number"
+                      value={currentExercise ? currentExercise.weight : ""}
+                      onChange={(e) => handleWeightChange(e.target.value)}
+                      className="w-20"
+                    />
+                    <span>kg</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>Reps:</span>
+                    <Input
+                      type="number"
+                      value={currentExercise ? currentExercise.reps : ""}
+                      onChange={(e) => handleRepsChange(e.target.value)}
+                      className="w-20"
+                    />
+                  </div>
                 </div>
               </DrawerHeader>
               <DrawerFooter>
-                <Button>Next</Button>
+                <Button onClick={handleNext}>Next</Button>
                 <DrawerClose asChild>
                   <Button>Stop</Button>
                 </DrawerClose>
@@ -150,7 +241,7 @@ export default async function Home() {
           </Drawer>
         </Card>
       </div>
-
+      <Toaster />
     </div>
   );
 }

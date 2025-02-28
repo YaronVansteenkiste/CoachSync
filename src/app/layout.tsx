@@ -27,7 +27,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased bg-primary text-white">
+      <body className="antialiased bg-dark text-white">
         {isMobile ? <MobileNavi /> : <Navigation />}
         <div className={isMobile ? "w-full bg-dark mb-44 p-4" : "ml-48 children-container flex flex-col p-10"}>
           <ThemeProvider

@@ -17,18 +17,29 @@ export async function getPersonalRecords(userId: string) {
         .innerJoin(exercises, eq(personalRecords.exerciseId, exercises.id));
 }
 
-export async function createOrUpdatePersonalRecord(record: { userId: string, exerciseId: string, maxWeight: number, maxReps: number }) {
+export async function createOrUpdatePersonalRecord(record: {
+    exerciseId: any;
+    maxReps: number;
+    maxWeight: number | null;
+    userId: string
+}) {
+    const parsedExerciseId = Number(record.exerciseId);
+
+    if (isNaN(parsedExerciseId)) {
+        throw new Error("Invalid exerciseId. Must be a number.");
+    }
+
     const existingRecord = await db
         .select()
         .from(personalRecords)
-        .where(and(eq(personalRecords.exerciseId, record.exerciseId), eq(personalRecords.userId, record.userId)))
+        .where(and(eq(personalRecords.exerciseId, parsedExerciseId), eq(personalRecords.userId, record.userId)))
         .limit(1)
         .then(records => records[0]);
 
     if (existingRecord) {
         await db.update(personalRecords)
             .set({
-                maxWeight: Math.max(record.maxWeight, existingRecord.maxWeight),
+                maxWeight: Math.max(record.maxWeight ?? 0, existingRecord.maxWeight ?? 0),
                 maxReps: Math.max(record.maxReps, existingRecord.maxReps),
                 achievedAt: new Date().toISOString()
             })
@@ -36,9 +47,8 @@ export async function createOrUpdatePersonalRecord(record: { userId: string, exe
             .execute();
     } else {
         await db.insert(personalRecords).values({
-            userId: record.userId,
-            exerciseId: record.exerciseId,
-            maxWeight: record.maxWeight,
+            exerciseId: parsedExerciseId,
+            maxWeight: record.maxWeight ?? 0,
             maxReps: record.maxReps,
             achievedAt: new Date().toISOString()
         }).execute();

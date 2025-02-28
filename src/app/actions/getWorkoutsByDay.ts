@@ -1,6 +1,8 @@
 "use server";
 import { getExercisesFromWorkout } from "@/app/actions/getExercisesFromWorkout";
-import { getWorkoutFromDay } from "@/app/actions/getWorkoutFromDay";
+import { db } from "@/db/client";
+import { workouts as workoutsTable } from "@/db/schema";
+import { eq, and } from "drizzle-orm";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -22,7 +24,11 @@ export async function getWorkoutsByDay(userId: string): Promise<{ [key: string]:
     const workoutsByDay: { [key: string]: Workout[] } = Object.fromEntries(
         await Promise.all(
             days.map(async (day) => {
-                const workouts = await getWorkoutFromDay(userId, day);
+                const workoutName = day;
+                const workouts = await db
+                    .select()
+                    .from(workoutsTable)
+                    .where(and(eq(workoutsTable.userId, userId), eq(workoutsTable.name, workoutName)));
                 const workoutsWithExercises = await Promise.all(
                     workouts.map(async (workout) => ({
                         ...workout,

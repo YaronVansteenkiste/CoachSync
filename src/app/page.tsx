@@ -17,7 +17,7 @@ import { ChartComponent } from "@/app/components/Chart";
 import { fetchWorkoutData } from "./actions/fetchWorkoutData";
 import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
 import { Toaster, toast } from "sonner";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
 import { getExerciseIdByName } from "./actions/getWorkoutExercises";
@@ -26,6 +26,7 @@ const cardio = [
   {
     name: "Biggest Ride",
     distance: "25 km",
+    time: null,
   },
   {
     name: "Fastest Run",
@@ -35,14 +36,34 @@ const cardio = [
   {
     name: "Longest Swim",
     distance: "1 km",
+    time: null,
   },
 ];
 
+interface Exercise {
+  id: number;
+  name: string;
+  weight: number | null;
+  sets: number;
+  reps: number;
+  previousWeight?: number;
+}
+
+interface Workout {
+  id: number;
+  userId: string | null;
+  name: string;
+  createdAt: string | null;
+  durationMinutes: number;
+  intensity: string;
+  exercises: Exercise[];
+}
+
 export default function Home() {
   const userId = "550e8400-e29b-41d4-a716-446655440000";
-  const [workoutWithExercises, setWorkoutWithExercises] = useState([]);
+  const [workoutWithExercises, setWorkoutWithExercises] = useState<Workout[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [currentExercise, setCurrentExercise] = useState(null);
+  const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -55,76 +76,80 @@ export default function Home() {
     fetchData();
   }, [userId]);
 
-  const handleWeightChange = (weight) => {
-    const updatedExercise = { ...currentExercise, weight: parseFloat(weight) };
-    setCurrentExercise(updatedExercise);
+  const handleWeightChange = (weight: string) => {
+    if (currentExercise) {
+      const updatedExercise = { ...currentExercise, weight: parseFloat(weight) };
+      setCurrentExercise(updatedExercise);
 
-    const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
-      if (index === currentExerciseIndex) {
-        return {
-          ...workout,
-          exercises: workout.exercises.map((exercise) =>
+      const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
+        if (index === currentExerciseIndex) {
+          return {
+            ...workout,
+            exercises: workout.exercises.map((exercise) =>
               exercise.id === currentExercise.id ? updatedExercise : exercise
-          ),
-        };
-      }
-      return workout;
-    });
+            ),
+          };
+        }
+        return workout;
+      });
 
-    setWorkoutWithExercises(updatedWorkoutWithExercises);
+      setWorkoutWithExercises(updatedWorkoutWithExercises);
+    }
   };
 
-  const handleRepsChange = (reps) => {
-    const updatedExercise = { ...currentExercise, reps };
-    setCurrentExercise(updatedExercise);
+  const handleRepsChange = (reps: number) => {
+    if (currentExercise) {
+      const updatedExercise = { ...currentExercise, reps };
+      setCurrentExercise(updatedExercise);
 
-    const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
-      if (index === currentExerciseIndex) {
-        return {
-          ...workout,
-          exercises: workout.exercises.map((exercise) =>
+      const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
+        if (index === currentExerciseIndex) {
+          return {
+            ...workout,
+            exercises: workout.exercises.map((exercise) =>
               exercise.id === currentExercise.id ? updatedExercise : exercise
-          ),
-        };
-      }
-      return workout;
-    });
+            ),
+          };
+        }
+        return workout;
+      });
 
-    setWorkoutWithExercises(updatedWorkoutWithExercises);
+      setWorkoutWithExercises(updatedWorkoutWithExercises);
+    }
   };
 
   const handleNext = async () => {
-    await updateWorkoutExercise(currentExercise.id, {
-      weight: currentExercise.weight,
-      reps: currentExercise.reps,
-    });
-    console.log(currentExercise.name);
-    const exerciseId = await getExerciseIdByName(currentExercise.name);
+    if (currentExercise) {
+      await updateWorkoutExercise(currentExercise.id, {
+        weight: currentExercise.weight,
+        reps: currentExercise.reps,
+      });
 
-    console.log(currentExercise.id);
+      const exerciseId = await getExerciseIdByName(currentExercise.name);
 
-    await createOrUpdatePersonalRecord({
-      userId,
-      exerciseId: exerciseId,
-      maxWeight: currentExercise.weight,
-      maxReps: currentExercise.reps,
-    });
+      await createOrUpdatePersonalRecord({
+        userId,
+        exerciseId: exerciseId,
+        maxWeight: currentExercise.weight,
+        maxReps: currentExercise.reps,
+      });
 
-    if (currentExercise.weight > (currentExercise.previousWeight || 0)) {
-      toast.success(`New PR HIT! ${currentExercise.weight}kg is a new record!`);
-    }
+      if (currentExercise.weight !== null && currentExercise.weight > (currentExercise.previousWeight || 0)) {
+        toast.success(`New PR HIT! ${currentExercise.weight}kg is a new record!`);
+      }
 
-    const currentWorkout = workoutWithExercises[currentExerciseIndex];
-    const nextExerciseIndex = currentWorkout.exercises.indexOf(currentExercise) + 1;
+      const currentWorkout = workoutWithExercises[currentExerciseIndex];
+      const nextExerciseIndex = currentWorkout.exercises.indexOf(currentExercise) + 1;
 
-    if (nextExerciseIndex < currentWorkout.exercises.length) {
-      setCurrentExercise(currentWorkout.exercises[nextExerciseIndex]);
-    } else if (currentExerciseIndex < workoutWithExercises.length - 1) {
-      const nextWorkoutIndex = currentExerciseIndex + 1;
-      setCurrentExerciseIndex(nextWorkoutIndex);
-      setCurrentExercise(workoutWithExercises[nextWorkoutIndex].exercises[0]);
-    } else {
-      alert("Workout complete!");
+      if (nextExerciseIndex < currentWorkout.exercises.length) {
+        setCurrentExercise(currentWorkout.exercises[nextExerciseIndex]);
+      } else if (currentExerciseIndex < workoutWithExercises.length - 1) {
+        const nextWorkoutIndex = currentExerciseIndex + 1;
+        setCurrentExerciseIndex(nextWorkoutIndex);
+        setCurrentExercise(workoutWithExercises[nextWorkoutIndex].exercises[0]);
+      } else {
+        alert("Workout complete!");
+      }
     }
   };
 
@@ -194,34 +219,35 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {workoutWithExercises.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Exercise</TableHead>
-                      <TableHead>Weight</TableHead>
-                      <TableHead>Sets</TableHead>
-                      <TableHead>Reps</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {workoutWithExercises.map((workout) => (
-                        workout.exercises.map((exercise) => (
-                            <TableRow key={exercise.id}>
-                              <TableCell>{exercise.name}</TableCell>
-                              <TableCell>{exercise.weight}kg</TableCell>
-                              <TableCell>{exercise.sets}</TableCell>
-                              <TableCell>{exercise.reps}</TableCell>
-                            </TableRow>
-                        ))
-                    ))}
-                  </TableBody>
-                </Table>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Exercise</TableHead>
+                    <TableHead>Weight</TableHead>
+                    <TableHead>Sets</TableHead>
+                    <TableHead>Reps</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {workoutWithExercises.flatMap((workout) =>
+                    workout.exercises.map((exercise) => (
+                      <TableRow key={exercise.id}>
+                        <TableCell>{exercise.name}</TableCell>
+                        <TableCell>{exercise.weight}kg</TableCell>
+                        <TableCell>{exercise.sets}</TableCell>
+                        <TableCell>{exercise.reps}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
             ) : (
-                <p>No workout found for today.</p>
+              <p>No workout found for today.</p>
             )}
           </CardContent>
           <div className="flex flex-col mx-5">
-            <Button className="w-full my-2 w-50" onClick={handleEditWorkout}>Edit Workout</Button>          </div>
+            <Button className="w-full my-2 w-50" onClick={handleEditWorkout}>Edit Workout</Button>
+          </div>
           <Drawer>
             <div className="flex flex-col mx-5 mb-5">
               <DrawerTrigger asChild>
@@ -237,10 +263,10 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <span>Weight:</span>
                     <Input
-                      type="number"
-                      value={currentExercise ? currentExercise.weight : ""}
-                      onChange={(e) => handleWeightChange(e.target.value)}
-                      className="w-20"
+                        type="number"
+                        value={currentExercise && currentExercise.weight !== null ? currentExercise.weight : ""}
+                        onChange={(e) => handleWeightChange(e.target.value)}
+                        className="w-20"
                     />
                     <span>kg</span>
                   </div>
@@ -249,7 +275,7 @@ export default function Home() {
                     <Input
                       type="number"
                       value={currentExercise ? currentExercise.reps : ""}
-                      onChange={(e) => handleRepsChange(e.target.value)}
+                      onChange={(e) => handleRepsChange(parseInt(e.target.value))}
                       className="w-20"
                     />
                   </div>

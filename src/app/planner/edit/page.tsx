@@ -1,26 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { fetchWorkout } from "@/app/actions/fetchWorkout";
-import { handleUpdate } from "@/app/actions/handleUpdate";
-import { addExercise } from "@/app/actions/addExercise";
-import { removeExercise } from "@/app/actions/removeExercise";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { fetchWorkout } from '@/app/actions/fetchWorkout';
+import { handleUpdate } from '@/app/actions/handleUpdate';
+import { addExercise } from '@/app/actions/addExercise';
+import { removeExercise } from '@/app/actions/removeExercise';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const USER_ID = '550e8400-e29b-41d4-a716-446655440000';
 
-export default function EditWorkoutPage() {
+interface Exercise {
+  id: number;
+  weight: number | null;
+  sets: number;
+  reps: number;
+  name: string;
+  category: string;
+  equipment: string;
+}
+
+interface Errors {
+    [key: number]: string;
+}
+
+function EditWorkoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const WORKOUT_NAME = searchParams.get('day') || 'Monday';
-    const [workoutId, setWorkoutId] = useState(null);
-    const [exercisesData, setExercisesData] = useState([]);
+    const [workoutId, setWorkoutId] = useState<number | null>(null);
+    const [exercisesData, setExercisesData] = useState<Exercise[]>([]);
     const [loading, setLoading] = useState(true);
     const [newExerciseId, setNewExerciseId] = useState('');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState<Errors>({});
 
     useEffect(() => {
         async function loadWorkout() {
@@ -37,18 +51,18 @@ export default function EditWorkoutPage() {
         loadWorkout();
     }, [WORKOUT_NAME]);
 
-    function handleInputChange(exerciseId, field, value) {
+    function handleInputChange(exerciseId: number, field: string, value: string | number) {
         setExercisesData((prev) =>
             prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: value } : ex))
         );
     }
 
     function validateInputs() {
-        const newErrors = {};
+        const newErrors: Errors = {};
         exercisesData.forEach((exercise) => {
-            if (exercise.weight === '') newErrors[exercise.id] = 'Weight is required';
-            if (exercise.sets === '') newErrors[exercise.id] = 'Sets are required';
-            if (exercise.reps === '') newErrors[exercise.id] = 'Reps are required';
+            if (exercise.weight === null || exercise.weight === undefined) newErrors[exercise.id] = 'Weight is required';
+            if (exercise.sets === null || exercise.sets === undefined) newErrors[exercise.id] = 'Sets are required';
+            if (exercise.reps === null || exercise.reps === undefined) newErrors[exercise.id] = 'Reps are required';
         });
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -77,7 +91,7 @@ export default function EditWorkoutPage() {
         }
     }
 
-    async function handleRemoveExercise(id) {
+    async function handleRemoveExercise(id: number) {
         try {
             await removeExercise(id);
             setExercisesData((prev) => prev.filter((ex) => ex.id !== id));
@@ -108,7 +122,7 @@ export default function EditWorkoutPage() {
                                         value={exercise.weight ?? ''}
                                         onChange={(e) => handleInputChange(exercise.id, 'weight', e.target.value)}
                                     />
-                                    {errors[exercise.id] && exercise.weight === '' && (
+                                    {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0 || exercise.weight === '') && (
                                         <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
                                     )}
                                 </div>
@@ -119,7 +133,7 @@ export default function EditWorkoutPage() {
                                         value={exercise.sets ?? ''}
                                         onChange={(e) => handleInputChange(exercise.id, 'sets', e.target.value)}
                                     />
-                                    {errors[exercise.id] && exercise.sets === '' && (
+                                    {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
                                         <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
                                     )}
                                 </div>
@@ -130,7 +144,7 @@ export default function EditWorkoutPage() {
                                         value={exercise.reps ?? ''}
                                         onChange={(e) => handleInputChange(exercise.id, 'reps', e.target.value)}
                                     />
-                                    {errors[exercise.id] && exercise.reps === '' && (
+                                    {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
                                         <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
                                     )}
                                 </div>
@@ -157,5 +171,13 @@ export default function EditWorkoutPage() {
                 Save & Go Back
             </Button>
         </div>
+    );
+}
+
+export default function EditWorkoutPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <EditWorkoutContent />
+        </Suspense>
     );
 }

@@ -15,17 +15,11 @@ const totalDistances = {
     Ride: recentActivities.filter(a => a.type === "Ride").reduce((sum, a) => sum + a.distance, 0),
 };
 
-const chartData = [
-    { name: "Runs", value: totalDistances.Run },
-    { name: "Swims", value: totalDistances.Swim },
-    { name: "Rides", value: totalDistances.Ride },
-];
-
 export default function Page() {
     return (
         <div className="p-6 space-y-6">
             <h1 className="text-4xl font-bold">Cardio Dashboard</h1>
-            
+
             <div className="flex gap-6">
                 <Card className="flex-1">
                     <CardContent className="p-4">
@@ -53,7 +47,7 @@ export default function Page() {
                 </Table>
                     </CardContent>
                 </Card>
-                
+
                 <Card className="w-1/3">
                     <CardContent className="p-4">
                         <h3 className="text-lg font-medium mb-4">Cardio Activity Summary</h3>
@@ -61,7 +55,7 @@ export default function Page() {
                     </CardContent>
                 </Card>
             </div>
-            
+
             <Card>
                 <CardContent className="p-4">
                     <h3 className="text-lg font-medium mb-4">Recent Activities</h3>

@@ -1,9 +1,9 @@
 'use client'
+
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -52,6 +52,7 @@ export function WeekPlannerUI({ workoutsByDay }: { workoutsByDay: { [key: string
                         </TabsTrigger>
                     ))}
                 </TabsList>
+
                 {days.map(day => (
                     <TabsContent key={day} value={day}>
                         <Card>
@@ -59,37 +60,38 @@ export function WeekPlannerUI({ workoutsByDay }: { workoutsByDay: { [key: string
                                 <CardTitle>{day}</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {workoutsByDay[day]?.map((workout) => (
-                                    <div key={workout.id} className="mb-4">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Exercise</TableHead>
-                                                    <TableHead>Weight</TableHead>
-                                                    <TableHead>Sets</TableHead>
-                                                    <TableHead>Reps</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {workout.exercises.map((exercise) => (
-                                                    <TableRow key={exercise.id}>
-                                                        <TableCell>{exercise.name}</TableCell>
-                                                        <TableCell>{exercise.weight === 0 ? "body weight" : `${exercise.weight}kg`}</TableCell>
-                                                        <TableCell>{exercise.sets}</TableCell>
-                                                        <TableCell>{exercise.reps}</TableCell>
+                                {workoutsByDay[day]?.length ? (
+                                    workoutsByDay[day].map(workout => (
+                                        <div key={workout.id} className="mb-4">
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead>Exercise</TableHead>
+                                                        <TableHead>Weight</TableHead>
+                                                        <TableHead>Sets</TableHead>
+                                                        <TableHead>Reps</TableHead>
                                                     </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        <button
-                                            onClick={() => router.push(`/planner/edit?day=${day}`)}
-                                            className="mt-2 p-2 bg-blue-500 text-white rounded"
-                                        >
-                                            Edit
-                                        </button>
-                                    </div>
-                                ))}
-                                {!workoutsByDay[day]?.length && (
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {workout.exercises.map(exercise => (
+                                                        <TableRow key={exercise.id}>
+                                                            <TableCell>{exercise.name}</TableCell>
+                                                            <TableCell>{exercise.weight === 0 ? "body weight" : `${exercise.weight}kg`}</TableCell>
+                                                            <TableCell>{exercise.sets}</TableCell>
+                                                            <TableCell>{exercise.reps}</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                            <button
+                                                onClick={() => router.push(`/planner/edit?day=${day}`)}
+                                                className="mt-2 p-2 bg-blue-500 text-white rounded"
+                                            >
+                                                Edit
+                                            </button>
+                                        </div>
+                                    ))
+                                ) : (
                                     <p className="text-gray-500">No workouts planned for this day</p>
                                 )}
                             </CardContent>

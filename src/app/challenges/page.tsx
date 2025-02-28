@@ -1,14 +1,6 @@
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
-  import { Progress } from "@/components/ui/progress"
-  import { Button } from "@/components/ui/button";
-
+import {Card,} from "@/components/ui/card"
+import {Progress} from "@/components/ui/progress"
+import {Button} from "@/components/ui/button";
 
 
 export default async function Page() {

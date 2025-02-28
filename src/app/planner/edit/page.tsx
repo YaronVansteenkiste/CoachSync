@@ -20,6 +20,7 @@ export default function EditWorkoutPage() {
     const [exercisesData, setExercisesData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [newExerciseId, setNewExerciseId] = useState('');
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         async function loadWorkout() {
@@ -36,14 +37,33 @@ export default function EditWorkoutPage() {
         loadWorkout();
     }, [WORKOUT_NAME]);
 
-    async function updateExercise(exerciseId, updatedData) {
+    function handleInputChange(exerciseId, field, value) {
+        setExercisesData((prev) =>
+            prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: value } : ex))
+        );
+    }
+
+    function validateInputs() {
+        const newErrors = {};
+        exercisesData.forEach((exercise) => {
+            if (exercise.weight === '') newErrors[exercise.id] = 'Weight is required';
+            if (exercise.sets === '') newErrors[exercise.id] = 'Sets are required';
+            if (exercise.reps === '') newErrors[exercise.id] = 'Reps are required';
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    }
+
+    async function handleSave() {
+        if (!validateInputs()) return;
+
         try {
-            await handleUpdate(exerciseId, updatedData);
-            setExercisesData((prev) =>
-                prev.map((ex) => (ex.id === exerciseId ? { ...ex, ...updatedData } : ex))
-            );
+            for (const exercise of exercisesData) {
+                await handleUpdate(exercise.id, exercise);
+            }
+            router.push('/planner');
         } catch (error) {
-            console.error('Error updating exercise:', error);
+            console.error('Error saving workout:', error);
         }
     }
 
@@ -57,15 +77,15 @@ export default function EditWorkoutPage() {
         }
     }
 
-  async function handleRemoveExercise(id) {
-    try {
-        await removeExercise(id);
-        setExercisesData((prev) => prev.filter((ex) => ex.id !== id));
-    } catch (error) {
-        console.error('Error removing exercise:', error);
-        alert('Failed to remove exercise from the database');
+    async function handleRemoveExercise(id) {
+        try {
+            await removeExercise(id);
+            setExercisesData((prev) => prev.filter((ex) => ex.id !== id));
+        } catch (error) {
+            console.error('Error removing exercise:', error);
+            alert('Failed to remove exercise from the database');
+        }
     }
-}
 
     return (
         <div className="max-w-5xl mx-auto p-4">
@@ -86,24 +106,33 @@ export default function EditWorkoutPage() {
                                     <Input
                                         type="number"
                                         value={exercise.weight ?? ''}
-                                        onChange={(e) => updateExercise(exercise.id, { weight: e.target.value })}
+                                        onChange={(e) => handleInputChange(exercise.id, 'weight', e.target.value)}
                                     />
+                                    {errors[exercise.id] && exercise.weight === '' && (
+                                        <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+                                    )}
                                 </div>
                                 <div className="mt-2">
                                     <label className="block text-sm font-medium">Sets</label>
                                     <Input
                                         type="number"
                                         value={exercise.sets ?? ''}
-                                        onChange={(e) => updateExercise(exercise.id, { sets: e.target.value })}
+                                        onChange={(e) => handleInputChange(exercise.id, 'sets', e.target.value)}
                                     />
+                                    {errors[exercise.id] && exercise.sets === '' && (
+                                        <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+                                    )}
                                 </div>
                                 <div className="mt-2">
                                     <label className="block text-sm font-medium">Reps</label>
                                     <Input
                                         type="number"
                                         value={exercise.reps ?? ''}
-                                        onChange={(e) => updateExercise(exercise.id, { reps: e.target.value })}
+                                        onChange={(e) => handleInputChange(exercise.id, 'reps', e.target.value)}
                                     />
+                                    {errors[exercise.id] && exercise.reps === '' && (
+                                        <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+                                    )}
                                 </div>
                                 <Button onClick={() => handleRemoveExercise(exercise.id)} className="w-full mt-2">
                                     Remove Exercise
@@ -124,7 +153,7 @@ export default function EditWorkoutPage() {
                     Add Exercise
                 </Button>
             </div>
-            <Button onClick={() => router.push('/planner')} className="w-full mt-4">
+            <Button onClick={handleSave} className="w-full mt-4">
                 Save & Go Back
             </Button>
         </div>

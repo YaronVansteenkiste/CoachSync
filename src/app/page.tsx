@@ -17,6 +17,9 @@ import { ChartComponent } from "@/app/components/Chart";
 import { fetchWorkoutData } from "./actions/fetchWorkoutData";
 import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
 import { Toaster, toast } from "sonner";
+import {useRouter} from "next/navigation";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 const cardio = [
   {
@@ -120,6 +123,13 @@ export default function Home() {
     }
   };
 
+  const router = useRouter();
+
+  const handleEditWorkout = () => {
+    const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    router.push(`/planner/edit?day=${currentDay}`);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
@@ -179,25 +189,34 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             {workoutWithExercises.length > 0 ? (
-              workoutWithExercises.map((workout) => (
-                <Card key={workout.id} className="dark:bg-gray-700 my-4">
-                  <CardContent>
-                    <p className="font-bold">{workout.name}</p>
-                    {workout.exercises.map((exercise) => (
-                      <p key={exercise.id}>
-                        {exercise.name}: {exercise.weight}kg {exercise.sets} sets of {exercise.reps} reps
-                      </p>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Exercise</TableHead>
+                      <TableHead>Weight</TableHead>
+                      <TableHead>Sets</TableHead>
+                      <TableHead>Reps</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {workoutWithExercises.map((workout) => (
+                        workout.exercises.map((exercise) => (
+                            <TableRow key={exercise.id}>
+                              <TableCell>{exercise.name}</TableCell>
+                              <TableCell>{exercise.weight}kg</TableCell>
+                              <TableCell>{exercise.sets}</TableCell>
+                              <TableCell>{exercise.reps}</TableCell>
+                            </TableRow>
+                        ))
                     ))}
-                  </CardContent>
-                </Card>
-              ))
+                  </TableBody>
+                </Table>
             ) : (
-              <p>No workout found for today.</p>
+                <p>No workout found for today.</p>
             )}
           </CardContent>
           <div className="flex flex-col mx-5">
-            <Button className="w-full my-2 w-50">Edit Workout</Button>
-          </div>
+            <Button className="w-full my-2 w-50" onClick={handleEditWorkout}>Edit Workout</Button>          </div>
           <Drawer>
             <div className="flex flex-col mx-5 mb-5">
               <DrawerTrigger asChild>

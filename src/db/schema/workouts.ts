@@ -44,7 +44,7 @@ export const personalRecords = pgTable("personal_records", {
 });
 
 export const progress = pgTable("progress", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   date: text("date").notNull(),
   weightKg: real("weight_kg").notNull(),

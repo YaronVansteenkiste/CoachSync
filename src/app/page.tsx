@@ -21,43 +21,12 @@ import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
 import { getExerciseIdByName } from "./actions/getWorkoutExercises";
-
-const cardio = [
-  {
-    name: "Biggest Ride",
-    distance: "25 km",
-    time: null,
-  },
-  {
-    name: "Fastest Run",
-    distance: "5 km",
-    time: "20:00",
-  },
-  {
-    name: "Longest Swim",
-    distance: "1 km",
-    time: null,
-  },
-];
-
-interface Exercise {
-  id: number;
-  name: string;
-  weight: number | null;
-  sets: number;
-  reps: number;
-  previousWeight?: number;
-}
-
-interface Workout {
-  id: number;
-  userId: string | null;
-  name: string;
-  createdAt: string | null;
-  durationMinutes: number;
-  intensity: string;
-  exercises: Exercise[];
-}
+import { Exercise, Workout } from "./types";
+import { cardio } from "./data";
+import WelcomeCard from "./components/WelcomeCard";
+import CardioProgressCard from "./components/CardioProgressCard";
+import StrongestLiftCard from "./components/StrongestLiftCard";
+import TotalProgressCard from "./components/TotalProgressCard";
 
 export default function Home() {
   const userId = "550e8400-e29b-41d4-a716-446655440000";
@@ -163,54 +132,10 @@ export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="my-3 text-center">
-              Welcome back Yaron!
-            </CardTitle>
-            <Avatar className={"mx-auto w-52 h-52"}>
-              <AvatarImage src="https://avatars.githubusercontent.com/u/125354929?v=4" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Cardio Progress</CardTitle>
-            <>
-              {cardio.map((workout, index) => (
-                <Card key={index} className="dark:bg-gray-700 my-4">
-                  <CardTitle className="text-center">{workout.name}</CardTitle>
-                  <CardContent>
-                    <p>{workout.distance}</p>
-                    {workout?.time && <p>{workout.time}</p>}
-                  </CardContent>
-                </Card>
-              ))}
-            </>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Strongest lift</CardTitle>
-            <Card className="dark:bg-gray-800">
-              <CardHeader>
-                <CardTitle>Bench Press</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mt-4">You are stronger than 70% of users.</p>
-              </CardContent>
-            </Card>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartComponent />
-          </CardContent>
-        </Card>
+        <WelcomeCard />
+        <CardioProgressCard />
+        <StrongestLiftCard />
+        <TotalProgressCard />
       </div>
       <div className="col-span-1">
         <Card>

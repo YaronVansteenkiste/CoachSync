@@ -135,7 +135,7 @@ export default function Home() {
         <WelcomeCard />
         <CardioProgressCard />
         <StrongestLiftCard />
-        <TotalProgressCard />
+        <TotalProgressCard userId={userId} />
       </div>
       <div className="col-span-1">
         <Card>

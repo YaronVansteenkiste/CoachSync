@@ -1,3 +1,5 @@
+-- in geval van data verlies
+
 INSERT INTO
     users (
     id,
@@ -30,7 +32,7 @@ VALUES
     (
         1,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Monday - Chest & Triceps',
+        'Monday',
         '2025-02-22T10:00:00Z',
         60,
         'High'
@@ -38,7 +40,7 @@ VALUES
     (
         2,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Tuesday - Back & Biceps',
+        'Tuesday',
         '2025-02-23T10:00:00Z',
         55,
         'Medium'
@@ -46,7 +48,7 @@ VALUES
     (
         3,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Wednesday - Legs',
+        'Wednesday',
         '2025-02-24T10:00:00Z',
         70,
         'High'
@@ -54,7 +56,7 @@ VALUES
     (
         4,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Thursday - Shoulders',
+        'Thursday',
         '2025-02-25T10:00:00Z',
         50,
         'Medium'
@@ -62,7 +64,7 @@ VALUES
     (
         5,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Friday - Full Body',
+        'Friday',
         '2025-02-26T10:00:00Z',
         65,
         'High'
@@ -70,7 +72,7 @@ VALUES
     (
         6,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Saturday - Cardio',
+        'Saturday',
         '2025-02-27T11:00:00Z',
         40,
         'Low'
@@ -78,7 +80,7 @@ VALUES
     (
         7,
         '550e8400-e29b-41d4-a716-446655440000',
-        'Sunday - Rest Day',
+        'Sunday',
         '2025-02-28T11:00:00Z',
         0,
         'None'

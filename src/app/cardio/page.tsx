@@ -1,33 +1,115 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { ChartComponent } from "@/app/components/Chart";
-import ActivityTable from "./components/ActivityTable";
-import SummaryCard from "./components/SummaryCard";
-import RecentActivities from "./components/RecentActivities";
+'use client'
+import { useState, useEffect } from 'react';
+import { OpenAI } from 'openai';
+import { getWorkoutsByDay } from '@/app/actions/getWorkoutsByDay';
+import { marked } from 'marked';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card"
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
-const recentActivities = [
-    { type: "Run", distance: 10.2, time: "45:30", date: "2025-02-16" },
-    { type: "Swim", distance: 1.5, time: "30:10", date: "2025-02-15" },
-    { type: "Ride", distance: 25.4, time: "1:15:20", date: "2025-02-14" },
-    { type: "Run", distance: 5.3, time: "28:45", date: "2025-02-13" },
-];
-
-const totalDistances = {
-    Run: recentActivities.filter(a => a.type === "Run").reduce((sum, a) => sum + a.distance, 0),
-    Swim: recentActivities.filter(a => a.type === "Swim").reduce((sum, a) => sum + a.distance, 0),
-    Ride: recentActivities.filter(a => a.type === "Ride").reduce((sum, a) => sum + a.distance, 0),
-};
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY ?? '',
+  dangerouslyAllowBrowser: true,
+});
 
 export default function Page() {
+    const [response, setResponse] = useState<string | null>(null);
+    const [workoutPlan, setWorkoutPlan] = useState<string | null>(null);
+    const [workoutsByDay, setWorkoutsByDay] = useState<any>(null);
+    const [isTyping, setIsTyping] = useState<boolean>(false);
+
+    useEffect(() => {
+        async function fetchWorkouts() {
+            const userId = "550e8400-e29b-41d4-a716-446655440000";
+            const workouts = await getWorkoutsByDay(userId);
+            setWorkoutsByDay(workouts);
+        }
+
+        fetchWorkouts();
+    }, []);
+
+    const handleDeepSeek = async (query: string) => {
+        setIsTyping(true);
+        try {
+            const completion = await client.chat.completions.create({
+                model: "deepseek/deepseek-r1:free",
+                messages: [
+                    {
+                        role: "user",
+                        content: query,
+                    },
+                ],
+            });
+            setResponse(completion.choices[0].message.content);
+        } catch (error) {
+            console.error("Error with DeepSeek search:", error);
+        } finally {
+            setIsTyping(false);
+        }
+    };
+
+    const handleCheckWorkoutPlan = async () => {
+        setIsTyping(true);
+        try {
+            const completion = await client.chat.completions.create({
+                model: "deepseek/deepseek-r1:free",
+                messages: [
+                    {
+                        role: "user",
+                        content: "Check if my workout plan is optimal: " + JSON.stringify(workoutsByDay),
+                    },
+                ],
+            });
+            setResponse(completion.choices[0].message.content);
+        } catch (error) {
+            console.error("Error with DeepSeek search:", error);
+        } finally {
+            setIsTyping(false);
+        }
+    };
+
     return (
-        <div className="p-6 space-y-6">
-            <h1 className="text-4xl font-bold">Cardio Dashboard</h1>
-            <div className="flex gap-6">
-                <ActivityTable totalDistances={totalDistances} />
-                <SummaryCard>
-                    <ChartComponent />
-                </SummaryCard>
-            </div>
-            <RecentActivities recentActivities={recentActivities} />
+        <div className="p-6 font-sans">
+            <h1 className="mb-4">DeepSeek Search</h1>
+            <Button onClick={handleCheckWorkoutPlan} className="mb-4">
+                Check if my workout plan is optimal
+            </Button>
+            <Card className="max-w-lg mx-auto">
+                <CardHeader>
+                    <Input
+                        type="text"
+                        placeholder="Enter your question"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                handleDeepSeek(e.currentTarget.value);
+                            }
+                        }}
+                        className="w-full"
+                    />
+                </CardHeader>
+                <CardContent>
+                    {isTyping && (
+                        <p className="italic text-gray-500">
+                            AI is typing...
+                        </p>
+                    )}
+                    {response && (
+                        <div className="mt-4">
+                            <h2>Response:</h2>
+                            <p dangerouslySetInnerHTML={{ __html: marked(response) }}></p>
+                        </div>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    {/* Additional footer content if needed */}
+                </CardFooter>
+            </Card>
         </div>
     );
 }

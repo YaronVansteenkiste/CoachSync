@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: "FitTrack",
-        short_name: "FitTrack",
-        description: "FitTrack is a PWA to track workouts and progress built with Next.js",
+        name: "CoachSync",
+        short_name: "CoachSync",
+        description: "CoachSync is a PWA to help coaches track workouts and progress built with Next.js",
         id: "/",
         start_url: "/",
         display: "standalone",

@@ -16,10 +16,10 @@ export function Navigation() {
 
     return (
         <nav className="navbar h-full w-full fixed top-0 left-0 pt-5">
+            <div className="flex items-center py-4 px-12 font-bold text-2xl">
+                <Link href="/">CoachSync</Link>
+            </div>
             <div className="w-50">
-                <div>
-                    <h1 className="text-2xl text-center my-10 font-bold text-white">FitTrack</h1>
-                </div>
                 {paths.map(({ name, href, icon: Icon }, index) => (
                     <Link
                         key={index}

@@ -25,12 +25,14 @@ import { Exercise, Workout } from "./types";
 import WelcomeCard from "./components/WelcomeCard";
 import StrongestLiftCard from "./components/StrongestLiftCard";
 import TotalProgressCard from "./components/TotalProgressCard";
+import RecentResponses from '@/components/RecentResponses';
 
 export default function Home() {
   const userId = "550e8400-e29b-41d4-a716-446655440000";
   const [workoutWithExercises, setWorkoutWithExercises] = useState<Workout[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
@@ -121,8 +123,6 @@ export default function Home() {
     }
   };
 
-  const router = useRouter();
-
   const handleEditWorkout = () => {
     const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
     router.push(`/planner/edit?day=${currentDay}`);
@@ -131,12 +131,20 @@ export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <WelcomeCard />
-        <StrongestLiftCard />
+        <WelcomeCard/>
+        <StrongestLiftCard  />
+        <Card className="w-full h-full">
+          <CardHeader>
+            <h2 className="text-2xl font-bold">Recent Responses</h2>
+          </CardHeader>
+          <CardContent>
+            <RecentResponses userId="550e8400-e29b-41d4-a716-446655440000" />
+          </CardContent>
+        </Card>
         <TotalProgressCard userId={userId} />
       </div>
-      <div className="col-span-1">
-        <Card>
+      <div className="col-span-1 md:row-span-2">
+        <Card className="h-full">
           <CardHeader>
             <CardTitle>Today’s Workout</CardTitle>
           </CardHeader>

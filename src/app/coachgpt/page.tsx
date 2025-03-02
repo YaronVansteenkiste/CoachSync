@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import { OpenAI } from 'openai';
 import { getWorkoutsByDay } from '@/app/actions/getWorkoutsByDay';
 import { marked } from 'marked';
-import { db } from "@/db/client";
-import { responses } from "@/db/schema/workouts";
 import { saveResponseToDB } from '@/app/actions/saveResponseToDB';
 import {
     Card,

@@ -97,7 +97,7 @@ export default function Home() {
       const exerciseId = await getExerciseIdByName(currentExercise.name);
 
       await createOrUpdatePersonalRecord({
-        userId,
+        userId: userId, 
         exerciseId: exerciseId,
         maxWeight: currentExercise.weight,
         maxReps: currentExercise.reps,

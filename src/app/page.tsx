@@ -117,7 +117,8 @@ export default function Home() {
         setCurrentExerciseIndex(nextWorkoutIndex);
         setCurrentExercise(workoutWithExercises[nextWorkoutIndex].exercises[0]);
       } else {
-        alert("Workout complete!");
+        toast.success("Workout complete!");
+        document.getElementById("stop-btn")?.click();
       }
     }
   };
@@ -209,7 +210,7 @@ export default function Home() {
               <DrawerFooter>
                 <Button onClick={handleNext}>Next</Button>
                 <DrawerClose asChild>
-                  <Button>Stop</Button>
+                  <Button id="stop-btn">Stop</Button>
                 </DrawerClose>
               </DrawerFooter>
             </DrawerContent>

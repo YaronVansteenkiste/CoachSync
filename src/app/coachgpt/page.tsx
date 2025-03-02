@@ -16,6 +16,13 @@ const client = new OpenAI({
   dangerouslyAllowBrowser: true,
 });
 
+const presetQuestions = [
+    "Check if my workout plan is optimal",
+    "What are the benefits of cardio workouts?",
+    "How often should I do cardio exercises?",
+    "What are some good cardio exercises for beginners?",
+];
+
 export default function Page() {
     const [response, setResponse] = useState<string | null>(null);
     const [workoutPlan, setWorkoutPlan] = useState<string | null>(null);
@@ -83,20 +90,48 @@ export default function Page() {
         }
     };
 
+    const handleSend = (query: string) => {
+        if (query.toLowerCase().includes('check') && query.toLowerCase().includes('workout') && query.toLowerCase().includes('plan')) {
+            handleCheckWorkoutPlan();
+        } else {
+            handleDeepSeek(query);
+        }
+    };
+
     return (
         <div className="p-6 font-sans">
-            <h1 className="mb-4">DeepSeek Search</h1>
-            <Button onClick={handleCheckWorkoutPlan} className="mb-4">
-                Check if my workout plan is optimal
-            </Button>
-            <Card className="max-w-lg mx-auto">
+            <h1 className="mb-4 text-3xl font-bold">CoachGPT</h1>
+            <div className="mb-4">
+                {presetQuestions.map((question, index) => (
+                    <Button
+                        key={index}
+                        onClick={() => {
+                            const inputElement = document.querySelector('input') as HTMLInputElement;
+                            handleSend(question);
+                        }}
+                        className="mr-2 mb-2"
+                    >
+                        {question}
+                    </Button>
+                ))}
+            </div>
+            <Card className="w-full mx-auto">
                 <CardHeader>
-                    <Input
-                        type="text"
-                        placeholder="Enter your question"
-                        onKeyDown={handleInputKeyDown}
-                        className="w-full"
-                    />
+                    <div className="flex">
+                        <Input
+                            type="text"
+                            placeholder="Enter your question"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSend(e.currentTarget.value);
+                                }
+                            }}
+                            className="w-full"
+                        />
+                        <Button onClick={() => handleSend((document.querySelector('input') as HTMLInputElement).value)} className="ml-2">
+                            Send
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {isTyping && (

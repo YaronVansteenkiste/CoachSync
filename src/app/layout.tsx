@@ -17,7 +17,7 @@ export default function RootLayout({
       setIsMobile(window.innerWidth < 920);
     };
 
-    handleResize(); // Set initial value
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -29,7 +29,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-dark text-white">
         {isMobile ? <MobileNavi /> : <Navigation />}
-        <div className={isMobile ? "w-full bg-dark mb-44 p-4" : "ml-48 children-container flex flex-col p-10"}>
+        <div className={isMobile ? "w-full bg-dark mb-44 p-4" : "ml-48 children-container flex flex-col p-10 min-h-screen"}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

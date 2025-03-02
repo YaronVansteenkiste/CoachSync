@@ -22,9 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
 import { getExerciseIdByName } from "./actions/getWorkoutExercises";
 import { Exercise, Workout } from "./types";
-import { cardio } from "./data";
 import WelcomeCard from "./components/WelcomeCard";
-import CardioProgressCard from "./components/CardioProgressCard";
 import StrongestLiftCard from "./components/StrongestLiftCard";
 import TotalProgressCard from "./components/TotalProgressCard";
 
@@ -134,7 +132,6 @@ export default function Home() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
         <WelcomeCard />
-        <CardioProgressCard />
         <StrongestLiftCard />
         <TotalProgressCard userId={userId} />
       </div>

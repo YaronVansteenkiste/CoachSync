@@ -44,9 +44,16 @@ export const personalRecords = pgTable("personal_records", {
 });
 
 export const progress = pgTable("progress", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: serial("id").primaryKey(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
   date: text("date").notNull(),
   weightKg: real("weight_kg").notNull(),
   bodyFatPercentage: real("body_fat_percentage").notNull(),
+});
+
+export const responses = pgTable("responses", {
+  id: serial("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  createdAt: text("created_at").default("now()"),
 });

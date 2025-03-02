@@ -47,6 +47,7 @@ export async function createOrUpdatePersonalRecord(record: {
             .execute();
     } else {
         await db.insert(personalRecords).values({
+            userId: record.userId,
             exerciseId: parsedExerciseId,
             maxWeight: record.maxWeight ?? 0,
             maxReps: record.maxReps,

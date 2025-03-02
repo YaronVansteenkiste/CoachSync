@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { OpenAI } from 'openai';
 import { getWorkoutsByDay } from '@/app/actions/getWorkoutsByDay';
 import { marked } from 'marked';
+import { saveResponseToDB } from '@/app/actions/saveResponseToDB';
 import {
     Card,
     CardContent, CardHeader
@@ -51,7 +52,17 @@ export default function Page() {
                     },
                 ],
             });
-            setResponse(completion.choices[0].message.content);
+            const responseContent = completion.choices[0].message.content;
+            if (responseContent) {
+                if (responseContent) {
+                    if (responseContent) {
+                        if (responseContent) {
+                            setResponse(responseContent);
+                            await saveResponseToDB("550e8400-e29b-41d4-a716-446655440000", responseContent);
+                        }
+                    }
+                }
+            }
         } catch (error) {
             console.error("Error with DeepSeek search:", error);
         } finally {
@@ -71,7 +82,9 @@ export default function Page() {
                     },
                 ],
             });
-            setResponse(completion.choices[0].message.content);
+            const responseContent = completion.choices[0].message.content;
+            setResponse(responseContent);
+            await saveResponseToDB("550e8400-e29b-41d4-a716-446655440000", responseContent!);
         } catch (error) {
             console.error("Error with DeepSeek search:", error);
         } finally {

@@ -4,11 +4,9 @@ import { OpenAI } from 'openai';
 import { getWorkoutsByDay } from '@/app/actions/getWorkoutsByDay';
 import { marked } from 'marked';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card"
+    Card,
+    CardContent, CardHeader
+} from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -74,6 +72,17 @@ export default function Page() {
         }
     };
 
+    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            const query = e.currentTarget.value.toLowerCase();
+            if (query.includes('check') && query.includes('workout') && query.includes('plan')) {
+                handleCheckWorkoutPlan();
+            } else {
+                handleDeepSeek(e.currentTarget.value);
+            }
+        }
+    };
+
     return (
         <div className="p-6 font-sans">
             <h1 className="mb-4">DeepSeek Search</h1>
@@ -85,11 +94,7 @@ export default function Page() {
                     <Input
                         type="text"
                         placeholder="Enter your question"
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                handleDeepSeek(e.currentTarget.value);
-                            }
-                        }}
+                        onKeyDown={handleInputKeyDown}
                         className="w-full"
                     />
                 </CardHeader>
@@ -106,9 +111,6 @@ export default function Page() {
                         </div>
                     )}
                 </CardContent>
-                <CardFooter>
-                    {/* Additional footer content if needed */}
-                </CardFooter>
             </Card>
         </div>
     );

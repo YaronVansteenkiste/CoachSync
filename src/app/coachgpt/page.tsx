@@ -44,7 +44,7 @@ export default function Page() {
         setIsTyping(true);
         try {
             const completion = await client.chat.completions.create({
-                model: "deepseek/deepseek-r1:free",
+                model: "deepseek/deepseek-chat:free",
                 messages: [
                     {
                         role: "user",

@@ -25,7 +25,7 @@ import { Exercise, Workout } from "./types";
 import WelcomeCard from "./components/WelcomeCard";
 import StrongestLiftCard from "./components/StrongestLiftCard";
 import TotalProgressCard from "./components/TotalProgressCard";
-import RecentResponses from '@/components/RecentResponses';
+import RecentResponses from '@/app/components/RecentResponses';
 
 export default function Home() {
   const userId = "550e8400-e29b-41d4-a716-446655440000";

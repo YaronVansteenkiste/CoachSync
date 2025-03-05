@@ -25,10 +25,19 @@ export async function getWorkoutsByDay(userId: string): Promise<{ [key: string]:
         await Promise.all(
             days.map(async (day) => {
                 const workoutName = day;
-                const workouts = await db
+                let workouts = await db
                     .select()
                     .from(workoutsTable)
                     .where(and(eq(workoutsTable.userId, userId), eq(workoutsTable.name, workoutName)));
+
+                if (workouts.length === 0) {
+                    const [newWorkout] = await db
+                        .insert(workoutsTable)
+                        .values({ userId, name: workoutName })
+                        .returning();
+                    workouts = [newWorkout];
+                }
+
                 const workoutsWithExercises = await Promise.all(
                     workouts.map(async (workout) => ({
                         ...workout,

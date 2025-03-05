@@ -157,7 +157,7 @@ export default function Home() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
         <WelcomeCard userName={session?.user?.name || 'User'} />
-        <StrongestLiftCard />
+        <StrongestLiftCard userId={session?.user?.id || ''}/>
         <Card className="w-full h-full">
           <CardHeader>
             <h2 className="text-2xl font-bold">Recent Responses</h2>

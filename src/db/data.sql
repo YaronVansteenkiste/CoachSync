@@ -84,8 +84,6 @@ VALUES
 INSERT INTO
     workout_exercises (id, workout_id, exercise_id, weight, sets, reps)
 VALUES
-    (1, 1, 1, 120, 3, 10),
-    (2, 1, 7, NULL, 4, 12),
     (3, 1, 6, 15, 3, 12),
     (4, 2, 3, 140, 4, 8),
     (5, 2, 4, NULL, 3, 10),

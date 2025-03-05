@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { authClient } from "@/lib/auth/client";
+import { useRouter } from "next/navigation";
 
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -25,6 +27,15 @@ const presetQuestions = [
 ];
 
 export default function Page() {
+    const {
+        data: session,
+        isPending,
+        error,
+        refetch
+    } = authClient.useSession();
+    const router = useRouter();
+
+    const [userId, setUserId] = useState<string | undefined>(undefined);
     const [response, setResponse] = useState<string | null>(null);
     const [workoutPlan, setWorkoutPlan] = useState<string | null>(null);
     const [workoutsByDay, setWorkoutsByDay] = useState<any>(null);
@@ -32,13 +43,25 @@ export default function Page() {
 
     useEffect(() => {
         async function fetchWorkouts() {
-            const userId = "550e8400-e29b-41d4-a716-446655440000";
-            const workouts = await getWorkoutsByDay(userId);
-            setWorkoutsByDay(workouts);
+            if (!session && !isPending) {
+                router.push('/auth/login');
+                return;
+            }
+
+            if (!isPending && session) {
+                try {
+                    const userIdFromDb = session.user?.id;
+                    setUserId(userIdFromDb);
+                    const workouts = await getWorkoutsByDay(userIdFromDb);
+                    setWorkoutsByDay(workouts);
+                } catch (error) {
+                    console.error("Failed to fetch workouts by day:", error);
+                }
+            }
         }
 
         fetchWorkouts();
-    }, []);
+    }, [isPending, session, router]);
 
     const handleDeepSeek = async (query: string) => {
         setIsTyping(true);
@@ -54,14 +77,8 @@ export default function Page() {
             });
             const responseContent = completion.choices[0].message.content;
             if (responseContent) {
-                if (responseContent) {
-                    if (responseContent) {
-                        if (responseContent) {
-                            setResponse(responseContent);
-                            await saveResponseToDB("550e8400-e29b-41d4-a716-446655440000", responseContent);
-                        }
-                    }
-                }
+                setResponse(responseContent);
+                await saveResponseToDB(userId!, responseContent);
             }
         } catch (error) {
             console.error("Error with DeepSeek search:", error);
@@ -84,7 +101,7 @@ export default function Page() {
             });
             const responseContent = completion.choices[0].message.content;
             setResponse(responseContent);
-            await saveResponseToDB("550e8400-e29b-41d4-a716-446655440000", responseContent!);
+            await saveResponseToDB(userId!, responseContent!);
         } catch (error) {
             console.error("Error with DeepSeek search:", error);
         } finally {

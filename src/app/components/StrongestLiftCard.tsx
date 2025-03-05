@@ -8,12 +8,12 @@ interface Exercise {
   weight: number | null;
 }
 
-export default function StrongestLiftCard() {
+export default function StrongestLiftCard({ userId }: { userId: string }) {
   const [strongestLift, setStrongestLift] = useState<Exercise | null>(null);
 
   useEffect(() => {
     async function fetchRecords() {
-        const records = await getPersonalRecords("550e8400-e29b-41d4-a716-446655440000");
+        const records = await getPersonalRecords(userId);
         if (records.length === 0) {
             setStrongestLift(null);
             return;

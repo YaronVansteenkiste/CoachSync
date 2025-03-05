@@ -5,7 +5,8 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import { getProgressForUserId } from "@/app/actions/getProgressForUserId";
+import { getProgressRecord } from '@/app/actions/progressRecords';
+
 
 interface TotalProgressCardProps {
   userId: string;
@@ -35,7 +36,7 @@ export default function TotalProgressCard({ userId }: TotalProgressCardProps) {
 
   useEffect(() => {
     async function fetchProgressData() {
-      const data = await getProgressForUserId(userId);
+      const data = await getProgressRecord(userId);
       setProgressData(data);
     }
     fetchProgressData();

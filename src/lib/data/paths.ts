@@ -1,4 +1,4 @@
-import { Home, Calendar, BicepsFlexed, Dumbbell, Trophy } from "lucide-react";
+import { Home, Calendar, BicepsFlexed, Dumbbell, Trophy,  User} from "lucide-react";
 
 export const paths = [
     {
@@ -25,5 +25,10 @@ export const paths = [
         name: "Challenges",
         href: "/challenges",
         icon: Trophy,
+    },
+    {
+        name: "Profile",
+        href: "/profile",
+        icon: User,
     },
 ];

@@ -17,6 +17,8 @@ import {
 import { useEffect, useState } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
 
+import { authClient } from "@/lib/auth/client"
+
 const chartConfig = {
     strength: {
         label: "Strength",
@@ -25,21 +27,33 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function Page() {
-
+    const {
+        data: session,
+        isPending,
+        error,
+        refetch
+      } = authClient.useSession();
     const [personalRecords, setPersonalRecords] = useState<{ id: number; exerciseName: string; maxWeight: number; maxReps: number; achievedAt: string | null; }[]>([]);
     const [chartData, setChartData] = useState<{ subject: string; strength: number }[]>([]);
     const [leastTrained, setLeastTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
     const [overTrained, setOverTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
 
     useEffect(() => {
-        async function fetchPersonalRecords() {
-            const userId = "550e8400-e29b-41d4-a716-446655440000";
+            const userId = session!.user!.id;
+            async function fetchPersonalRecords() {
+            if (!userId) {
+                console.error('User not authenticated');
+                return;
+            }
             const records = await getPersonalRecords(userId);
             setPersonalRecords(records);
         }
 
         async function fetchChartData() {
-            const userId = "550e8400-e29b-41d4-a716-446655440000";
+            if (!userId) {
+                console.error('User not authenticated');
+                return;
+            }
             const data = await getChartData(userId);
             const formattedData = Object.entries(data).map(([subject, strength]) => ({
                 subject,
@@ -54,7 +68,7 @@ export default function Page() {
 
         fetchPersonalRecords();
         fetchChartData();
-    }, []);
+    }, [session]);
 
     return (
         <>

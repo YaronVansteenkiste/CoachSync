@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect } from "react";
-import { authClient } from "@/lib/auth/client"; // import the auth client
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
+import RecentResponses from '@/app/components/RecentResponses';
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Drawer,
   DrawerClose,
@@ -13,48 +13,62 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChartComponent } from "@/app/components/Chart";
-import { fetchWorkoutData } from "./actions/fetchWorkoutData";
-import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
-import { Toaster, toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
+import { authClient } from "@/lib/auth/client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Toaster, toast } from "sonner";
+import { fetchWorkoutData } from "./actions/fetchWorkoutData";
 import { getExerciseIdByName } from "./actions/getWorkoutExercises";
-import { Exercise, Workout } from "./types";
-import WelcomeCard from "./components/WelcomeCard";
+import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
 import StrongestLiftCard from "./components/StrongestLiftCard";
 import TotalProgressCard from "./components/TotalProgressCard";
-import RecentResponses from '@/app/components/RecentResponses';
-import { user } from "@/db/schema";
+import WelcomeCard from "./components/WelcomeCard";
+import { Exercise, Workout } from "./types";
 
 export default function Home() {
-  const { 
-    data: session, 
-    isPending, 
-    error, 
-    refetch 
-  } = authClient.useSession(); 
+  const {
+    data: session,
+    isPending,
+    error,
+    refetch
+  } = authClient.useSession();
+  const router = useRouter();
 
-  const userId = session?.user?.id || "550e8400-e29b-41d4-a716-446655440000"; // use session user id if available
   const [workoutWithExercises, setWorkoutWithExercises] = useState<Workout[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
+      if (!session && !isPending) {
+        router.push('/auth/login');
+        return;
+      }
+
       if (!isPending && session) {
-        const data = await fetchWorkoutData(userId);
-        setWorkoutWithExercises(data);
-        if (data.length > 0) {
-          setCurrentExercise(data[0].exercises[0]);
+        try {
+          const data = await fetchWorkoutData(session.user?.id || '');
+          setWorkoutWithExercises(data);
+          if (data.length > 0) {
+            setCurrentExercise(data[0].exercises[0]);
+          }
+        } catch (error) {
+          console.error("Failed to fetch workout data:", error);
+          toast.error("Failed to fetch workout data. Please try again later.");
         }
       }
     }
     fetchData();
-  }, [userId, isPending, session]);
+  }, [isPending, session, router]);
+
+  if (isPending) {
+    return <p>Loading...</p>;
+  }
+
+  if (!session) {
+    return <p>No session found.</p>;
+  }
 
   const handleWeightChange = (weight: string) => {
     if (currentExercise) {
@@ -108,7 +122,7 @@ export default function Home() {
       const exerciseId = await getExerciseIdByName(currentExercise.name);
 
       await createOrUpdatePersonalRecord({
-        userId: userId, 
+        userId: session.user?.id || '',
         exerciseId: exerciseId,
         maxWeight: currentExercise.weight,
         maxReps: currentExercise.reps,
@@ -139,24 +153,20 @@ export default function Home() {
     router.push(`/planner/edit?day=${currentDay}`);
   };
 
-  if (!session) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <WelcomeCard userName={session.user.name}/>
-        <StrongestLiftCard  />
+        <WelcomeCard userName={session?.user?.name || 'User'} />
+        <StrongestLiftCard />
         <Card className="w-full h-full">
           <CardHeader>
             <h2 className="text-2xl font-bold">Recent Responses</h2>
           </CardHeader>
           <CardContent>
-            <RecentResponses userId={session.user.id} />
+            <RecentResponses userId={session?.user?.id || ''} />
           </CardContent>
         </Card>
-        <TotalProgressCard userId={userId} />
+        <TotalProgressCard userId={session?.user?.id || ''} />
       </div>
       <div className="col-span-1 md:row-span-2">
         <Card className="h-full">
@@ -209,10 +219,10 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <span>Weight:</span>
                     <Input
-                        type="number"
-                        value={currentExercise && currentExercise.weight !== null ? currentExercise.weight : ""}
-                        onChange={(e) => handleWeightChange(e.target.value)}
-                        className="w-20"
+                      type="number"
+                      value={currentExercise && currentExercise.weight !== null ? currentExercise.weight : ""}
+                      onChange={(e) => handleWeightChange(e.target.value)}
+                      className="w-20"
                     />
                     <span>kg</span>
                   </div>

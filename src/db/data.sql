@@ -1,25 +1,6 @@
 -- in geval van data verlies
 
 INSERT INTO
-    users (
-    id,
-    username,
-    email,
-    password_hash,
-    created_at,
-    last_login
-)
-VALUES
-    (
-        '550e8400-e29b-41d4-a716-446655440000',
-        'john_doe',
-        'john@example.com',
-        'hashedpassword1',
-        '2025-01-01T08:00:00Z',
-        '2025-02-22T09:30:00Z'
-    );
-
-INSERT INTO
     workouts (
     id,
     user_id,
@@ -31,7 +12,7 @@ INSERT INTO
 VALUES
     (
         1,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Monday',
         '2025-02-22T10:00:00Z',
         60,
@@ -39,7 +20,7 @@ VALUES
     ),
     (
         2,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Tuesday',
         '2025-02-23T10:00:00Z',
         55,
@@ -47,7 +28,7 @@ VALUES
     ),
     (
         3,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Wednesday',
         '2025-02-24T10:00:00Z',
         70,
@@ -55,7 +36,7 @@ VALUES
     ),
     (
         4,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Thursday',
         '2025-02-25T10:00:00Z',
         50,
@@ -63,7 +44,7 @@ VALUES
     ),
     (
         5,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Friday',
         '2025-02-26T10:00:00Z',
         65,
@@ -71,7 +52,7 @@ VALUES
     ),
     (
         6,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Saturday',
         '2025-02-27T11:00:00Z',
         40,
@@ -79,7 +60,7 @@ VALUES
     ),
     (
         7,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         'Sunday',
         '2025-02-28T11:00:00Z',
         0,
@@ -131,7 +112,7 @@ INSERT INTO
 VALUES
     (
         1,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         1,
         130,
         8,
@@ -139,7 +120,7 @@ VALUES
     ),
     (
         2,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         3,
         160,
         6,
@@ -147,7 +128,7 @@ VALUES
     ),
     (
         3,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         2,
         180,
         5,
@@ -159,28 +140,28 @@ INSERT INTO
 VALUES
     (
         1,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         '2025-02-01',
         80,
         15.5
     ),
     (
         2,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         '2025-02-08',
         81,
         15.2
     ),
     (
         3,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         '2025-02-15',
         81.5,
         14.9
     ),
     (
         4,
-        '550e8400-e29b-41d4-a716-446655440000',
+        '7MOVvTxyM3ULEDvcZ5l0anmA5fhjUZEw',
         '2025-02-22',
         82,
         14.5

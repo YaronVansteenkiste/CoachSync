@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
+import { authClient } from "@/lib/auth/client"; // import the auth client
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,9 +27,17 @@ import WelcomeCard from "./components/WelcomeCard";
 import StrongestLiftCard from "./components/StrongestLiftCard";
 import TotalProgressCard from "./components/TotalProgressCard";
 import RecentResponses from '@/app/components/RecentResponses';
+import { user } from "@/db/schema";
 
 export default function Home() {
-  const userId = "550e8400-e29b-41d4-a716-446655440000";
+  const { 
+    data: session, 
+    isPending, 
+    error, 
+    refetch 
+  } = authClient.useSession(); 
+
+  const userId = session?.user?.id || "550e8400-e29b-41d4-a716-446655440000"; // use session user id if available
   const [workoutWithExercises, setWorkoutWithExercises] = useState<Workout[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
@@ -36,14 +45,16 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchData() {
-      const data = await fetchWorkoutData(userId);
-      setWorkoutWithExercises(data);
-      if (data.length > 0) {
-        setCurrentExercise(data[0].exercises[0]);
+      if (!isPending && session) {
+        const data = await fetchWorkoutData(userId);
+        setWorkoutWithExercises(data);
+        if (data.length > 0) {
+          setCurrentExercise(data[0].exercises[0]);
+        }
       }
     }
     fetchData();
-  }, [userId]);
+  }, [userId, isPending, session]);
 
   const handleWeightChange = (weight: string) => {
     if (currentExercise) {
@@ -128,17 +139,21 @@ export default function Home() {
     router.push(`/planner/edit?day=${currentDay}`);
   };
 
+  if (!session) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <WelcomeCard/>
+        <WelcomeCard userName={session.user.name}/>
         <StrongestLiftCard  />
         <Card className="w-full h-full">
           <CardHeader>
             <h2 className="text-2xl font-bold">Recent Responses</h2>
           </CardHeader>
           <CardContent>
-            <RecentResponses userId="550e8400-e29b-41d4-a716-446655440000" />
+            <RecentResponses userId={session.user.id} />
           </CardContent>
         </Card>
         <TotalProgressCard userId={userId} />

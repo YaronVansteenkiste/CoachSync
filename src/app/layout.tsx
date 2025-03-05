@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Navigation } from "@/app/components/Navigation";
 import { MobileNavi } from "@/app/components/MobileNavigation";
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   children,
@@ -30,14 +31,16 @@ export default function RootLayout({
       <body className="antialiased bg-dark text-white">
         {isMobile ? <MobileNavi /> : <Navigation />}
         <div className={isMobile ? "w-full bg-dark mb-44 p-4" : "ml-48 children-container flex flex-col p-10 min-h-screen"}>
-          <ThemeProvider
+            <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+            >
+            <SessionProvider>
+              {children}
+            </SessionProvider>
+            </ThemeProvider>
         </div>
       </body>
     </html>

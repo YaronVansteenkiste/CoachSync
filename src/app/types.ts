@@ -1,4 +1,8 @@
+import { ReactNode } from "react";
+
 export interface Exercise {
+  equipment: ReactNode;
+  category: ReactNode;
   id: number;
   name: string;
   weight: number | null;
@@ -15,4 +19,8 @@ export interface Workout {
   durationMinutes: number;
   intensity: string;
   exercises: Exercise[];
+}
+
+export interface Errors {
+  [key: number]: string;
 }

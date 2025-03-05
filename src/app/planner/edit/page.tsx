@@ -6,24 +6,12 @@ import { fetchWorkout } from '@/app/actions/fetchWorkout';
 import { handleUpdate } from '@/app/actions/handleUpdate';
 import { addExercise } from '@/app/actions/addExercise';
 import { removeExercise } from '@/app/actions/removeExercise';
+import { fetchExercises } from '@/app/actions/fetchExercises';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { authClient } from "@/lib/auth/client";
-
-interface Exercise {
-  id: number;
-  weight: number | null;
-  sets: number;
-  reps: number;
-  name: string;
-  category: string;
-  equipment: string;
-}
-
-interface Errors {
-  [key: number]: string;
-}
+import { Exercise, Errors } from '@/app/types';
 
 function EditWorkoutContent() {
   const {
@@ -39,7 +27,8 @@ function EditWorkoutContent() {
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [exercisesData, setExercisesData] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newExerciseId, setNewExerciseId] = useState('');
+  const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
@@ -64,6 +53,16 @@ function EditWorkoutContent() {
       }
     }
     loadWorkout();
+
+    async function loadExercises() {
+      try {
+        const exercises = await fetchExercises();
+        setAvailableExercises(exercises);
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+      }
+    }
+    loadExercises();
   }, [WORKOUT_NAME, session, isPending, router]);
 
   function handleInputChange(exerciseId: number, field: string, value: string | number) {
@@ -97,10 +96,15 @@ function EditWorkoutContent() {
   }
 
   async function handleAddExercise() {
+    if (selectedExerciseId === null) return;
+
     try {
-      const newExercise = await addExercise(workoutId, newExerciseId);
-      setExercisesData((prev) => [...prev, newExercise]);
-      setNewExerciseId('');
+      const newExercise = await addExercise(workoutId, selectedExerciseId);
+      const exerciseDetails = availableExercises.find(ex => ex.id === selectedExerciseId);
+      if (exerciseDetails) {
+        setExercisesData((prev) => [...prev, { ...newExercise, name: exerciseDetails.name, category: exerciseDetails.category, equipment: exerciseDetails.equipment }]);
+      }
+      setSelectedExerciseId(null);
     } catch (error) {
       console.error('Error adding exercise:', error);
     }
@@ -172,12 +176,19 @@ function EditWorkoutContent() {
         </div>
       )}
       <div className="mt-6">
-        <label className="block text-sm font-medium">Add Exercise by ID</label>
-        <Input
-          type="text"
-          value={newExerciseId}
-          onChange={(e) => setNewExerciseId(e.target.value)}
-        />
+        <label className="block text-sm font-medium">Add Exercise</label>
+        <select
+          value={selectedExerciseId ?? ''}
+          onChange={(e) => setSelectedExerciseId(Number(e.target.value))}
+          className="w-full mt-2"
+        >
+          <option value="" disabled>Select an exercise</option>
+          {availableExercises.map((exercise) => (
+            <option key={exercise.id} value={exercise.id}>
+              {exercise.name} - {exercise.category} - {exercise.equipment}
+            </option>
+          ))}
+        </select>
         <Button onClick={handleAddExercise} className="w-full mt-2">
           Add Exercise
         </Button>

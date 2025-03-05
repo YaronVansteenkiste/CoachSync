@@ -62,8 +62,8 @@ export default function ProfilePage() {
                     <h1 className="text-2xl font-bold">Profile Page</h1>
                 </CardHeader>
                 <CardContent>
-                    <div className="mb-4">
-                        <p className="text-lg">Name: {session!.user.name}</p>
+                    <div className="text-center mb-4">
+                        <p className="text-lg font-bold">{session!.user.name}</p>
                     </div>
                     <form onSubmit={handleAddProgressRecord} className="mb-4">
                         <div className="mb-2">

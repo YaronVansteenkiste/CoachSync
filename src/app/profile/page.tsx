@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { getProgressRecord, addProgressRecord } from '@/app/actions/progressRecords';
+import BoringAvatar from 'boring-avatars';
 
 export default function ProfilePage() {
     const {
@@ -19,6 +20,7 @@ export default function ProfilePage() {
     const [progressRecords, setProgressRecords] = useState<Array<{ id: number; userId: string | null; date: string; weightKg: number; bodyFatPercentage: number }>>([]);
     const [weight, setWeight] = useState('');
     const [bodyFatPercentage, setBodyFatPercentage] = useState('');
+    const [randomString, setRandomString] = useState('');
 
     useEffect(() => {
         async function fetchProgressRecords() {
@@ -47,6 +49,12 @@ export default function ProfilePage() {
         }
     };
 
+    const generateRandomString = () => {
+        const result = Math.random().toString(36).substring(2, 8);
+        setRandomString(result);
+        session!.user.image = result;
+    };
+
     if (isPending) {
         return <p>Loading...</p>;
     }
@@ -62,8 +70,16 @@ export default function ProfilePage() {
                     <h1 className="text-2xl font-bold">Profile Page</h1>
                 </CardHeader>
                 <CardContent>
-                    <div className="text-center mb-4">
+                    <div className="flex flex-col items-center text-center mb-4">
                         <p className="text-lg font-bold">{session!.user.name}</p>
+                        <BoringAvatar
+                            size={100}
+                            name={session!.user.image ? session!.user.image : 'STANDARD'}
+                            variant="beam"
+                            colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
+                        />
+                    <Button onClick={generateRandomString} className="mt-5">Change icon</Button>
+
                     </div>
                     <form onSubmit={handleAddProgressRecord} className="mb-4">
                         <div className="mb-2">

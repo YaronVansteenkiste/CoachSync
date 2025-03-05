@@ -90,12 +90,14 @@ export default function Page() {
     const handleCheckWorkoutPlan = async () => {
         setIsTyping(true);
         try {
+            const sanitizedWorkouts = { ...workoutsByDay };
+            delete sanitizedWorkouts.userId;
             const completion = await client.chat.completions.create({
                 model: "deepseek/deepseek-r1:free",
                 messages: [
                     {
                         role: "user",
-                        content: "Check if my workout plan is optimal: " + JSON.stringify(workoutsByDay),
+                        content: "Check if my workout plan is optimal: " + JSON.stringify(sanitizedWorkouts),
                     },
                 ],
             });

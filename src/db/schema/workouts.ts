@@ -5,9 +5,6 @@ export const workouts = pgTable("workouts", {
   id: serial("id").primaryKey(),
   userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
-  createdAt: text("created_at").default("now()"),
-  durationMinutes: integer("duration_minutes").notNull().default(60),
-  intensity: text("intensity").notNull().default("Medium"),
 });
 
 export const exercises = pgTable("exercises", {

@@ -34,11 +34,16 @@ export default function RecentResponses({ userId }: { userId: string }) {
         <div className="mt-6">
             <h2 className="text-2xl font-bold">Recent Responses</h2>
             <ul>
-                {responses.map((response) => (
+                {responses.slice(0, 2).map((response: Response) => (
                     <li key={response.id} className="mb-2 p-2 border rounded">
                         <p>{trimContent(response.content)}</p>
                     </li>
                 ))}
+                {responses.length > 2 && (
+                    <li className="mb-2 p-2 border rounded">
+                        <p>...</p>
+                    </li>
+                )}
             </ul>
             <Button className="w-full my-2 w-50" onClick={navigateToCoachGPT}>Go to CoachGPT</Button>
         </div>

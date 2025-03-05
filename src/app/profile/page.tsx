@@ -8,6 +8,8 @@ import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
 import { getProgressRecord, addProgressRecord } from '@/app/actions/progressRecords';
 import BoringAvatar from 'boring-avatars';
+import { changeProfilePic } from '@/app/actions/changeProfilePic';
+
 
 export default function ProfilePage() {
     const {
@@ -52,7 +54,10 @@ export default function ProfilePage() {
     const generateRandomString = () => {
         const result = Math.random().toString(36).substring(2, 8);
         setRandomString(result);
-        session!.user.image = result;
+        changeProfilePic(session?.user?.id!, result);
+        if (session && session.user) {
+            session.user.image = result;
+        }
     };
 
     if (isPending) {
@@ -78,7 +83,7 @@ export default function ProfilePage() {
                             variant="beam"
                             colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
                         />
-                    <Button onClick={generateRandomString} className="mt-5">Change icon</Button>
+                        <Button onClick={generateRandomString} className="mt-5">Change icon</Button>
 
                     </div>
                     <form onSubmit={handleAddProgressRecord} className="mb-4">

@@ -7,7 +7,6 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import { useEffect, useState } from "react";
 import { getProgressRecord } from '@/app/actions/progressRecords';
 
-
 interface TotalProgressCardProps {
   userId: string;
 }
@@ -33,11 +32,24 @@ export default function TotalProgressCard({ userId }: TotalProgressCardProps) {
   }
   
   const [progressData, setProgressData] = useState<ProgressData[]>([]);
+  const [percentageChange, setPercentageChange] = useState<number | null>(null);
+  const [dateRange, setDateRange] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProgressData() {
       const data = await getProgressRecord(userId);
       setProgressData(data);
+
+      if (data.length > 1) {
+        const firstRecord = data[0];
+        const lastRecord = data[data.length - 1];
+        const weightChange = ((lastRecord.weightKg - firstRecord.weightKg) / firstRecord.weightKg) * 100;
+        setPercentageChange(weightChange);
+
+        const startDate = new Date(firstRecord.date).toLocaleDateString();
+        const endDate = new Date(lastRecord.date).toLocaleDateString();
+        setDateRange(`${startDate} - ${endDate}`);
+      }
     }
     fetchProgressData();
   }, [userId]);
@@ -98,12 +110,16 @@ export default function TotalProgressCard({ userId }: TotalProgressCardProps) {
       <CardFooter>
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
+            {percentageChange !== null && (
+              <div className="flex items-center gap-2 font-medium leading-none">
+                Trending {percentageChange >= 0 ? 'up' : 'down'} by {Math.abs(percentageChange).toFixed(2)}% this period <TrendingUp className="h-4 w-4" />
+              </div>
+            )}
+            {dateRange && (
+              <div className="flex items-center gap-2 leading-none text-muted-foreground">
+                {dateRange}
+              </div>
+            )}
           </div>
         </div>
       </CardFooter>

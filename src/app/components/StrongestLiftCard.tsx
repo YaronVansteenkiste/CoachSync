@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { getPersonalRecords } from '@/app/actions/getPersonalRecords';
+import Image from 'next/image';
 
 interface Exercise {
   id: number;
   name: string;
   weight: number | null;
+  image: string; 
 }
 
 export default function StrongestLiftCard({ userId }: { userId: string }) {
@@ -22,7 +24,8 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
         setStrongestLift({
           id: records[0].id,
           name: records[0].exerciseName,
-          weight: records[0].maxWeight
+          weight: records[0].maxWeight,
+          image: records[0].exerciseImage 
         });
     }
 
@@ -36,9 +39,10 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
       </CardHeader>
       <CardContent>
         {strongestLift ? (
-          <div>
+          <div className="text-center">
             <h3 className="text-xl font-bold">{strongestLift.name}</h3>
             <p className="mt-4">Weight: {strongestLift.weight} kg</p>
+            <Image src={strongestLift.image} alt={strongestLift.name} width={200} height={200} className="mt-4 mx-auto" />
           </div>
         ) : (
           <p>No personal records set</p>

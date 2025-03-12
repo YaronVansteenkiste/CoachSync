@@ -8,6 +8,7 @@ export async function getPersonalRecords(userId: string) {
         .select({
             id: personalRecords.id,
             exerciseName: exercises.name,
+            exerciseImage: exercises.image,
             maxWeight: personalRecords.maxWeight,
             maxReps: personalRecords.maxReps,
             achievedAt: personalRecords.achievedAt,

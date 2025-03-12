@@ -12,6 +12,7 @@ export const exercises = pgTable("exercises", {
   name: text("name").notNull().unique(),
   category: text("category").notNull(),
   equipment: text("equipment").notNull(),
+  image: text("image").notNull().default("/images/placeholder.png"),
 });
 
 export const workoutExercises = pgTable("workout_exercises", {

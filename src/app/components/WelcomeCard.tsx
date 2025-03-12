@@ -44,7 +44,7 @@ export default function WelcomeCard({ userName, image }: { userName: string, ima
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.1 }}
                 transition={{ duration: 0.5, yoyo: Infinity }}
-                className="text-blue-500 font-bold block text-2xl mt-2"
+                className="text-blue-300 font-bold block text-2xl mt-2"
               >
                 {userName}!
               </motion.span>

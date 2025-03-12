@@ -21,7 +21,7 @@ export function MobileNavi() {
                         )}
                     >
                         {Icon && <Icon className="w-6 h-6 mb-1" />}
-                        <span className="text-xs">{name}</span>
+                        <span className="text-xs hidden sm:block">{name}</span>
                     </Link>
                 ))}
             </div>

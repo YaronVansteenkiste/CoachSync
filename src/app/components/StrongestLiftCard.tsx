@@ -43,7 +43,7 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
           <div className="text-center">
             <h3 className="text-xl font-bold">{strongestLift.name}</h3>
             <motion.p 
-              className="mt-4 text-4xl font-extrabold text-blue-500"
+              className="mt-4 text-4xl font-extrabold text-blue-300"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1.2 }}
               transition={{ duration: 0.5, yoyo: Infinity }}

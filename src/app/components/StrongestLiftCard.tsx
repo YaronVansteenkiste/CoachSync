@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { getPersonalRecords } from '@/app/actions/getPersonalRecords';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface Exercise {
   id: number;
@@ -41,8 +42,15 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
         {strongestLift ? (
           <div className="text-center">
             <h3 className="text-xl font-bold">{strongestLift.name}</h3>
-            <p className="mt-4">Weight: {strongestLift.weight} kg</p>
-            <Image src={strongestLift.image} alt={strongestLift.name} width={200} height={200} className="mt-4 mx-auto" />
+            <motion.p 
+              className="mt-4 text-4xl font-extrabold text-blue-500"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1.2 }}
+              transition={{ duration: 0.5, yoyo: Infinity }}
+            >
+              {strongestLift.weight} kg
+            </motion.p>
+            <Image src={strongestLift.image} alt={strongestLift.name} width={200} height={200} className="mt-4 mx-auto rounded-lg" />
           </div>
         ) : (
           <p>No personal records set</p>

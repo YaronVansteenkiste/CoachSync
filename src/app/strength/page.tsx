@@ -33,7 +33,7 @@ export default function Page() {
         error,
         refetch
       } = authClient.useSession();
-    const [personalRecords, setPersonalRecords] = useState<{ id: number; exerciseName: string; maxWeight: number; maxReps: number; achievedAt: string | null; }[]>([]);
+    const [personalRecords, setPersonalRecords] = useState<{ id: number; exerciseName: string; exerciseImage: string; maxWeight: number; maxReps: number; achievedAt: string | null; }[]>([]);
     const [chartData, setChartData] = useState<{ subject: string; strength: number }[]>([]);
     const [leastTrained, setLeastTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
     const [overTrained, setOverTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
@@ -125,29 +125,29 @@ export default function Page() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                         {leastTrained && (
-                            <Card>
+                            <Card className="flex flex-col items-center">
                                 <CardHeader className="items-center">
                                     <CardTitle>Least Trained Muscle</CardTitle>
                                     <CardDescription>
                                         You are currently undertraining your {leastTrained.bodyPart}.
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="pb-0">
-                                    <p className="text-2xl font-bold">{leastTrained.percentage.toFixed(2)}%</p>
+                                <CardContent className="pb-0 flex flex-col items-center">
+                                    <p className="text-4xl font-bold text-red-500">{leastTrained.percentage.toFixed(2)}%</p>
                                 </CardContent>
                             </Card>
                         )}
 
                         {overTrained && (
-                            <Card>
+                            <Card className="flex flex-col items-center">
                                 <CardHeader className="items-center">
                                     <CardTitle>Overtrained Muscle</CardTitle>
                                     <CardDescription>
                                         You are currently overtraining your {overTrained.bodyPart}.
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent className="pb-0">
-                                    <p className="text-2xl font-bold">{overTrained.percentage.toFixed(2)}%</p>
+                                <CardContent className="pb-0 flex flex-col items-center">
+                                    <p className="text-4xl font-bold text-green-500">{overTrained.percentage.toFixed(2)}%</p>
                                 </CardContent>
                             </Card>
                         )}
@@ -161,6 +161,7 @@ export default function Page() {
                                     <p className="text-2xl font-bold">{record.maxWeight}kg</p>
                                     <p className="text-lg">{record.maxReps} reps</p>
                                     <p className="text-muted-foreground">{record.achievedAt}</p>
+                                    <img src={record.exerciseImage} alt={record.exerciseName} className="mt-4 w-full h-auto rounded" />
                                 </CardContent>
                             </Card>
                         ))}

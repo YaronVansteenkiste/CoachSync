@@ -31,7 +31,6 @@ export const personalRecords = pgTable("personal_records", {
   maxWeight: real("max_weight").notNull(),
   maxReps: integer("max_reps").notNull(),
   achievedAt: text("achieved_at").default("now()"),
-  image: text("image").notNull().default("/images/placeholder.png"),
 });
 
 export const progress = pgTable("progress", {

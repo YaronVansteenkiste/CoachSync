@@ -1,13 +1,13 @@
 import { ReactNode } from "react";
 
 export interface Exercise {
-  equipment: ReactNode;
-  category: ReactNode;
   id: number;
   name: string;
   weight: number | null;
   sets: number;
   reps: number;
+  category?: string;
+  equipment?: string;
   previousWeight?: number;
 }
 
@@ -15,9 +15,6 @@ export interface Workout {
   id: number;
   userId: string | null;
   name: string;
-  createdAt: string | null;
-  durationMinutes: number;
-  intensity: string;
   exercises: Exercise[];
 }
 

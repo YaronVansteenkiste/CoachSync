@@ -26,7 +26,6 @@ import TotalProgressCard from "./components/TotalProgressCard";
 import WelcomeCard from "./components/WelcomeCard";
 import { Exercise, Workout } from "./types";
 
-
 export default function Home() {
   const {
     data: session,

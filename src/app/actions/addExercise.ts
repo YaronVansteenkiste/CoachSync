@@ -2,16 +2,13 @@
 import { workoutExercises } from "@/db/schema";
 import { db } from "@/db/client";
 
-interface Exercise {
-  id: number;
-  workoutId: number | null;
-  exerciseId: number | null;
-  weight: number | null;
-  sets: number;
-  reps: number;
-  name: string;
-  category: string;
-  equipment: string;
+export interface Exercise {
+    id: number;
+    workoutId: number;
+    exerciseId: number;
+    weight: number;
+    sets: number;
+    reps: number;
 }
 
 async function addExercise(workoutId: number | null, exerciseId: number | string): Promise<Exercise> {
@@ -29,23 +26,17 @@ async function addExercise(workoutId: number | null, exerciseId: number | string
             exerciseId: parsedExerciseId,
             weight: 0,
             sets: 0,
-            reps: 0,
-            name: 'New Exercise',
-            category: 'Category',
-            equipment: 'Equipment'
+            reps: 0
         })
         .returning();
 
     return {
         id: newExercise.id,
-        workoutId: newExercise.workoutId,
-        exerciseId: newExercise.exerciseId,
-        weight: newExercise.weight,
+        workoutId: newExercise.workoutId!,
+        exerciseId: newExercise.exerciseId!,
+        weight: newExercise.weight!,
         sets: newExercise.sets,
         reps: newExercise.reps,
-        name: newExercise.name,
-        category: newExercise.category,
-        equipment: newExercise.equipment
     };
 }
 

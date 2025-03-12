@@ -4,7 +4,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { authClient } from '@/lib/auth/client';
+import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { getProgressRecord, addProgressRecord } from '@/app/actions/progressRecords';
 import BoringAvatar from 'boring-avatars';

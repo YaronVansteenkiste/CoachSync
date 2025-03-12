@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
@@ -29,9 +29,7 @@ import { Exercise, Workout } from "./types";
 export default function Home() {
   const {
     data: session,
-    isPending,
-    error,
-    refetch
+    isPending
   } = authClient.useSession();
   const router = useRouter();
 
@@ -39,16 +37,12 @@ export default function Home() {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
 
+
   useEffect(() => {
     async function fetchData() {
-      if (!session && !isPending) {
-        router.push('/auth/login');
-        return;
-      }
-
-      if (!isPending && session) {
+      if (!isPending && session && session.user) {
         try {
-          const data = await fetchWorkoutData(session.user?.id || '');
+          const data = await fetchWorkoutData(session.user.id);
           setWorkoutWithExercises(data);
           if (data.length > 0) {
             setCurrentExercise(data[0].exercises[0]);

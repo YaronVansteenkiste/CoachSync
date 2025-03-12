@@ -17,7 +17,7 @@ import {
 import { useEffect, useState } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
 
-import { authClient } from "@/lib/auth/client"
+import { authClient } from "@/lib/auth-client"
 
 const chartConfig = {
     strength: {

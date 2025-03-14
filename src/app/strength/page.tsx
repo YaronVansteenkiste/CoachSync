@@ -128,8 +128,9 @@ export default function Page() {
                             <Card className="flex flex-col items-center">
                                 <CardHeader className="items-center">
                                     <CardTitle>Least Trained Muscle</CardTitle>
-                                    <CardDescription>
-                                        You are currently undertraining your {leastTrained.bodyPart}.
+                                    <CardDescription className="text-center">
+                                        <p>You are currently undertraining your</p>
+                                        <strong className="text-xl">{leastTrained.bodyPart}</strong>
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="pb-0 flex flex-col items-center">
@@ -142,8 +143,9 @@ export default function Page() {
                             <Card className="flex flex-col items-center">
                                 <CardHeader className="items-center">
                                     <CardTitle>Overtrained Muscle</CardTitle>
-                                    <CardDescription>
-                                        You are currently overtraining your {overTrained.bodyPart}.
+                                    <CardDescription className="text-center">
+                                        <p>You are currently overtraining your</p>
+                                        <strong className="text-xl">{overTrained.bodyPart}</strong>
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="pb-0 flex flex-col items-center">

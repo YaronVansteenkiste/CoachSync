@@ -24,7 +24,7 @@ import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
 import StrongestLiftCard from "@/components/home/strongest-lift";
 import TotalProgressCard from "@/components/home/total-progress";
 import WelcomeCard from "@/components/home/welcome-card";
-import { Exercise, Workout } from "./types";
+import { Exercise, Workout } from "../lib/types";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();

@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/db/client";
 import { exercises } from "@/db/schema";
-import { Exercise } from "@/app/types";
+import { Exercise } from "@/lib/types";
 
 export async function fetchExercises(): Promise<Exercise[]> {
     const result = await db.select().from(exercises).execute();

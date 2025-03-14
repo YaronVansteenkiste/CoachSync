@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { authClient } from "@/lib/auth/client";
-import { Exercise, Errors } from '@/app/types';
+import { Exercise, Errors } from '@/lib/types';
 
 function EditWorkoutContent() {
   const {

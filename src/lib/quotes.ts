@@ -1,0 +1,22 @@
+export const gymQuotes: string[] = [
+    "The only bad workout is the one you didn’t do.",
+    "Sweat is just fat crying.",
+    "Stronger every day.",
+    "Train insane or remain the same.",
+    "Pain is weakness leaving the body.",
+    "Your only limit is you.",
+    "Don’t wish for it, work for it.",
+    "Results happen over time, not overnight.",
+    "Push yourself because no one else will.",
+    "The body achieves what the mind believes.",
+    "Excuses don’t burn calories.",
+    "Success starts with self-discipline.",
+    "Do something today that your future self will thank you for.",
+    "Stop stopping yourself.",
+    "One more rep. One more set. One step closer.",
+    "Be stronger than your excuses.",
+    "You don’t have to be extreme, just consistent.",
+    "Work hard in silence, let success make the noise.",
+    "Fitness is not about being better than someone else, it's about being better than you used to be.",
+    "Fall in love with taking care of your body."
+];

@@ -1,0 +1,83 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a, #121217);
+    color: #fff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 2s ease-out;
+}
+
+.offline-container {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px 50px;
+    border-radius: 15px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+    animation: slideUp 1.5s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+h1 {
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    color: #ff4081;
+    animation: textPop 1s ease-in-out;
+}
+
+@keyframes textPop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+p {
+    font-size: 1.3em;
+    line-height: 1.6;
+    margin-top: 10px;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.fitness-icon img {
+    width: 450px;
+    height: auto;
+    margin-bottom: 30px;
+    animation: rotateIcon 4s infinite linear;
+    border-radius: 100px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+

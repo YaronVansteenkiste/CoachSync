@@ -26,7 +26,7 @@ const presetQuestions = [
     "What are some good cardio exercises for beginners?",
 ];
 
-export default function Page() {
+export default async function Page() {
     const {
         data: session,
         isPending,
@@ -174,7 +174,7 @@ export default function Page() {
                     {response && (
                         <div className="mt-4">
                             <h2>Response:</h2>
-                            <p dangerouslySetInnerHTML={{ __html: marked(response) }}></p>
+                            <p dangerouslySetInnerHTML={{ __html: await marked(response) }}></p>
                         </div>
                     )}
                 </CardContent>

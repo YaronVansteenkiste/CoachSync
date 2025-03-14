@@ -35,8 +35,19 @@ export default function Home() {
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
   const [tempWeight, setTempWeight] = useState("");
   const [tempReps, setTempReps] = useState("");
+  const [permission, setPermission] = useState<NotificationPermission>();
 
   useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    }
+    
     async function fetchData() {
       if (!isPending && session && session.user) {
         try {
@@ -63,6 +74,25 @@ export default function Home() {
     }
   }, [currentExercise]);
 
+  useEffect(() => {
+    if ("Notification" in window) setPermission(Notification.permission);
+  }, []);
+
+  async function requestPermission() {
+    if ("Notification" in window) {
+      const permission = await Notification.requestPermission();
+      console.log(permission);
+      setPermission(permission);
+    }
+  }
+
+  async function sendNotification(message: string) {
+    if (typeof window !== "undefined" && "Notification" in window && permission === "granted") {
+      new Notification(message);
+      console.log("Notification sent");
+    }
+  }
+
   const handleNext = async () => {
     if (currentExercise) {
       const updatedExercise = { 
@@ -86,7 +116,9 @@ export default function Home() {
       });
 
       if (updatedExercise!.weight! > (currentExercise.previousWeight || 0)) {
-        toast.success(`New PR HIT! ${updatedExercise.weight}kg is a new record!`);
+        const message = `New PR HIT! ${updatedExercise.weight}kg is a new record!`;
+        toast.success(message);
+        sendNotification(message);
       }
 
       const currentWorkout = workoutWithExercises[currentExerciseIndex];
@@ -163,7 +195,7 @@ export default function Home() {
           <Drawer>
             <div className="flex flex-col mx-5 mb-5">
               <DrawerTrigger asChild>
-                <Button className="flex flex-col w-full">Start Workout</Button>
+                <Button className="flex flex-col w-full" onClick={requestPermission}>Start Workout</Button>
               </DrawerTrigger>
             </div>
             <DrawerContent>

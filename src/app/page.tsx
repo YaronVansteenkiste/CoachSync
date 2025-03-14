@@ -1,6 +1,6 @@
 'use client'
 import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
-import RecentResponses from '@/app/components/RecentResponses';
+import RecentResponses from '@/components/home/recent-responses';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -21,9 +21,9 @@ import { Toaster, toast } from "sonner";
 import { fetchWorkoutData } from "./actions/fetchWorkoutData";
 import { getExerciseIdByName } from "./actions/getWorkoutExercises";
 import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
-import StrongestLiftCard from "./components/StrongestLiftCard";
-import TotalProgressCard from "./components/TotalProgressCard";
-import WelcomeCard from "./components/WelcomeCard";
+import StrongestLiftCard from "@/components/home/strongest-lift";
+import TotalProgressCard from "@/components/home/total-progress";
+import WelcomeCard from "@/components/home/welcome-card";
 import { Exercise, Workout } from "./types";
 
 export default function Home() {

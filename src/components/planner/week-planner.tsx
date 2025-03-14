@@ -23,7 +23,7 @@ interface Workout {
     exercises: Exercise[];
 }
 
-export function WeekPlannerUI({ workoutsByDay }: { workoutsByDay: { [key: string]: Workout[] } }) {
+export function WeekPlanner({ workoutsByDay }: { workoutsByDay: { [key: string]: Workout[] } }) {
     const [selectedDay, setSelectedDay] = useState("Monday");
     const [isMobile, setIsMobile] = useState(false);
     const router = useRouter();

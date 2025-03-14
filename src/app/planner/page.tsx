@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { authClient } from "@/lib/auth-client";
 import { getWorkoutsByDay } from "../actions/getWorkoutsByDay";
-import { WeekPlannerUI } from "@/app/planner/WeekPlannerUI";
+import { WeekPlanner } from "@/components/planner/week-planner";
 import { useRouter } from "next/navigation";
 
 export default function WeekPlannerPage() {
@@ -46,5 +46,5 @@ export default function WeekPlannerPage() {
         return <p>No user ID found.</p>;
     }
 
-    return <WeekPlannerUI workoutsByDay={workoutsByDay} />;
+    return <WeekPlanner workoutsByDay={workoutsByDay} />;
 }

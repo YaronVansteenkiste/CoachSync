@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { MobileNavi } from "@/components/home/mobile-navigation";
-import { SessionProvider } from "next-auth/react";
 import { usePathname } from 'next/navigation';
 import { Navigation } from "@/components/home/desktop-navigation";
 
@@ -48,9 +47,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
             >
-            <SessionProvider>
               {children}
-            </SessionProvider>
             </ThemeProvider>
         </div>
       </body>

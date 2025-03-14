@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/client";
 import { getWorkoutsByDay } from "../actions/getWorkoutsByDay";
 import { WeekPlanner } from "@/components/planner/week-planner";
 import { useRouter } from "next/navigation";

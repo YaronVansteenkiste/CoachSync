@@ -12,7 +12,7 @@ export async function fetchExercises(): Promise<Exercise[]> {
         sets: 0,
         reps: 0,
         previousWeight: undefined,
-        category: null,
-        equipment: null
+        category: undefined,
+        equipment: undefined
     }));
 }

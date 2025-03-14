@@ -27,16 +27,14 @@ import WelcomeCard from "@/components/home/welcome-card";
 import { Exercise, Workout } from "./types";
 
 export default function Home() {
-  const {
-    data: session,
-    isPending
-  } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
 
   const [workoutWithExercises, setWorkoutWithExercises] = useState<Workout[]>([]);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentExercise, setCurrentExercise] = useState<Exercise | null>(null);
-
+  const [tempWeight, setTempWeight] = useState("");
+  const [tempReps, setTempReps] = useState("");
 
   useEffect(() => {
     async function fetchData() {
@@ -46,6 +44,8 @@ export default function Home() {
           setWorkoutWithExercises(data);
           if (data.length > 0) {
             setCurrentExercise(data[0].exercises[0]);
+            setTempWeight(data[0]!.exercises[0]!.weight!.toString());
+            setTempReps(data[0].exercises[0].reps.toString());
           }
         } catch (error) {
           console.error("Failed to fetch workout data:", error);
@@ -56,74 +56,37 @@ export default function Home() {
     fetchData();
   }, [isPending, session, router]);
 
-  if (isPending) {
-    return <p>Loading...</p>;
-  }
-
-  if (!session) {
-    return <p>No session found.</p>;
-  }
-
-  const handleWeightChange = (weight: string) => {
+  useEffect(() => {
     if (currentExercise) {
-      const updatedExercise = { ...currentExercise, weight: parseFloat(weight) };
-      setCurrentExercise(updatedExercise);
-
-      const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
-        if (index === currentExerciseIndex) {
-          return {
-            ...workout,
-            exercises: workout.exercises.map((exercise) =>
-              exercise.id === currentExercise.id ? updatedExercise : exercise
-            ),
-          };
-        }
-        return workout;
-      });
-
-      setWorkoutWithExercises(updatedWorkoutWithExercises);
+      setTempWeight(currentExercise!.weight!.toString());
+      setTempReps(currentExercise.reps.toString());
     }
-  };
-
-  const handleRepsChange = (reps: number) => {
-    if (currentExercise) {
-      const updatedExercise = { ...currentExercise, reps };
-      setCurrentExercise(updatedExercise);
-
-      const updatedWorkoutWithExercises = workoutWithExercises.map((workout, index) => {
-        if (index === currentExerciseIndex) {
-          return {
-            ...workout,
-            exercises: workout.exercises.map((exercise) =>
-              exercise.id === currentExercise.id ? updatedExercise : exercise
-            ),
-          };
-        }
-        return workout;
-      });
-
-      setWorkoutWithExercises(updatedWorkoutWithExercises);
-    }
-  };
+  }, [currentExercise]);
 
   const handleNext = async () => {
     if (currentExercise) {
+      const updatedExercise = { 
+        ...currentExercise, 
+        weight: parseFloat(tempWeight) || currentExercise.weight, 
+        reps: parseInt(tempReps) || currentExercise.reps
+      };
+
       await updateWorkoutExercise(currentExercise.id, {
-        weight: currentExercise.weight,
-        reps: currentExercise.reps,
+        weight: updatedExercise.weight,
+        reps: updatedExercise.reps,
       });
 
       const exerciseId = await getExerciseIdByName(currentExercise.name);
 
       await createOrUpdatePersonalRecord({
-        userId: session.user?.id || '',
+        userId: session!.user?.id || '',
         exerciseId: exerciseId,
-        maxWeight: currentExercise.weight,
-        maxReps: currentExercise.reps,
+        maxWeight: updatedExercise.weight,
+        maxReps: updatedExercise.reps,
       });
 
-      if (currentExercise.weight !== null && currentExercise.weight > (currentExercise.previousWeight || 0)) {
-        toast.success(`New PR HIT! ${currentExercise.weight}kg is a new record!`);
+      if (updatedExercise!.weight! > (currentExercise.previousWeight || 0)) {
+        toast.success(`New PR HIT! ${updatedExercise.weight}kg is a new record!`);
       }
 
       const currentWorkout = workoutWithExercises[currentExerciseIndex];
@@ -132,9 +95,8 @@ export default function Home() {
       if (nextExerciseIndex < currentWorkout.exercises.length) {
         setCurrentExercise(currentWorkout.exercises[nextExerciseIndex]);
       } else if (currentExerciseIndex < workoutWithExercises.length - 1) {
-        const nextWorkoutIndex = currentExerciseIndex + 1;
-        setCurrentExerciseIndex(nextWorkoutIndex);
-        setCurrentExercise(workoutWithExercises[nextWorkoutIndex].exercises[0]);
+        setCurrentExerciseIndex(currentExerciseIndex + 1);
+        setCurrentExercise(workoutWithExercises[currentExerciseIndex + 1].exercises[0]);
       } else {
         toast.success("Workout complete!");
         document.getElementById("stop-btn")?.click();
@@ -214,8 +176,8 @@ export default function Home() {
                     <span>Weight:</span>
                     <Input
                       type="number"
-                      value={currentExercise && currentExercise.weight !== null ? currentExercise.weight : ""}
-                      onChange={(e) => handleWeightChange(e.target.value)}
+                      value={tempWeight}
+                      onChange={(e) => setTempWeight(e.target.value)}
                       className="w-20"
                     />
                     <span>kg</span>
@@ -224,8 +186,8 @@ export default function Home() {
                     <span>Reps:</span>
                     <Input
                       type="number"
-                      value={currentExercise ? currentExercise.reps : ""}
-                      onChange={(e) => handleRepsChange(parseInt(e.target.value))}
+                      value={tempReps}
+                      onChange={(e) => setTempReps(e.target.value)}
                       className="w-20"
                     />
                   </div>

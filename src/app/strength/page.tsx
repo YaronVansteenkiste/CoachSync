@@ -32,15 +32,15 @@ export default function Page() {
         isPending,
         error,
         refetch
-      } = authClient.useSession();
+    } = authClient.useSession();
     const [personalRecords, setPersonalRecords] = useState<{ id: number; exerciseName: string; exerciseImage: string; maxWeight: number; maxReps: number; achievedAt: string | null; }[]>([]);
     const [chartData, setChartData] = useState<{ subject: string; strength: number }[]>([]);
     const [leastTrained, setLeastTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
     const [overTrained, setOverTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
 
     useEffect(() => {
-            const userId = session!.user!.id;
-            async function fetchPersonalRecords() {
+        const userId = session!.user!.id;
+        async function fetchPersonalRecords() {
             if (!userId) {
                 console.error('User not authenticated');
                 return;
@@ -161,7 +161,9 @@ export default function Page() {
                                     <p className="text-2xl font-bold">{record.maxWeight}kg</p>
                                     <p className="text-lg">{record.maxReps} reps</p>
                                     <p className="text-muted-foreground">{record.achievedAt}</p>
-                                    <img src={record.exerciseImage} alt={record.exerciseName} className="mt-4 w-full h-auto rounded" />
+                                    <div className="flex justify-center mt-4">
+                                        <img src={record.exerciseImage} alt={record.exerciseName} className="w-auto max-h-[300px] rounded" />
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))}

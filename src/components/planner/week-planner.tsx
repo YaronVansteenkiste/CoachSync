@@ -84,7 +84,7 @@ export function WeekPlanner({ workoutsByDay }: { workoutsByDay: { [key: string]:
                                                 </TableBody>
                                             </Table>
                                             <button
-                                                onClick={() => router.push(`/planner/edit?day=${day}`)}
+                                                onClick={() => router.push(`/planner/edit/${day}`)}
                                                 className="mt-2 p-2 bg-blue-500 text-white rounded"
                                             >
                                                 Edit

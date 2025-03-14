@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { fetchWorkout } from '@/app/actions/fetchWorkout';
 import { handleUpdate } from '@/app/actions/handleUpdate';
 import { addExercise } from '@/app/actions/addExercise';
@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { authClient } from "@/lib/auth/client";
 import { Exercise, Errors } from '@/lib/types';
 
-function EditWorkoutContent() {
+function EditWorkoutContent({ params }: { params: { day: string } }) {
   const {
     data: session,
     isPending,
@@ -21,8 +21,7 @@ function EditWorkoutContent() {
     refetch
   } = authClient.useSession();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const WORKOUT_NAME = searchParams!.get('day') || 'Monday';
+  const [WORKOUT_NAME, setWORKOUT_NAME] = useState<string>('');
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const [workoutId, setWorkoutId] = useState<number | null>(null);
   const [exercisesData, setExercisesData] = useState<Exercise[]>([]);
@@ -30,6 +29,14 @@ function EditWorkoutContent() {
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
   const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Errors>({});
+
+  useEffect(() => {
+    async function loadParams() {
+      const unwrappedParams = await params;
+      setWORKOUT_NAME(unwrappedParams.day);
+    }
+    loadParams();
+  }, [params]);
 
   useEffect(() => {
     async function loadWorkout() {
@@ -52,7 +59,9 @@ function EditWorkoutContent() {
         }
       }
     }
-    loadWorkout();
+    if (WORKOUT_NAME) {
+      loadWorkout();
+    }
 
     async function loadExercises() {
       try {
@@ -200,10 +209,10 @@ function EditWorkoutContent() {
   );
 }
 
-export default function EditWorkoutPage() {
+export default function EditWorkoutPage({ params }: { params: { day: string } }) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <EditWorkoutContent />
+      <EditWorkoutContent params={params} />
     </Suspense>
   );
 }

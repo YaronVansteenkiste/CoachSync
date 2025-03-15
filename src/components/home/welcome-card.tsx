@@ -18,7 +18,7 @@ export default function WelcomeCard({ userName, image }: { userName: string, ima
     };
 
     updateQuote(); 
-    const intervalId = setInterval(updateQuote, 1000); 
+    const intervalId = setInterval(updateQuote, 10000); 
 
     return () => clearInterval(intervalId); 
   }, []);

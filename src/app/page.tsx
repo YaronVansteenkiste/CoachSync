@@ -25,6 +25,7 @@ import StrongestLiftCard from "@/components/home/strongest-lift";
 import TotalProgressCard from "@/components/home/total-progress";
 import WelcomeCard from "@/components/home/welcome-card";
 import { Exercise, Workout } from "../lib/types";
+import { BedSingle } from "lucide-react";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();
@@ -36,6 +37,7 @@ export default function Home() {
   const [tempWeight, setTempWeight] = useState("");
   const [tempReps, setTempReps] = useState("");
   const [permission, setPermission] = useState<NotificationPermission>();
+  const [isRestDay, setIsRestDay] = useState(false);
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
@@ -47,16 +49,19 @@ export default function Home() {
           console.error('Service Worker registration failed:', error);
         });
     }
-    
+
     async function fetchData() {
       if (!isPending && session && session.user) {
         try {
           const data = await fetchWorkoutData(session.user.id);
           setWorkoutWithExercises(data);
-          if (data.length > 0) {
+          if (data.length > 0 && data[0].exercises.length > 0) {
             setCurrentExercise(data[0].exercises[0]);
-            setTempWeight(data[0]!.exercises[0]!.weight!.toString());
-            setTempReps(data[0].exercises[0].reps.toString());
+            setTempWeight(data[0].exercises[0].weight?.toString() || '');
+            setTempReps(data[0].exercises[0].reps?.toString() || '');
+            setIsRestDay(false);
+          } else {
+            setIsRestDay(true);
           }
         } catch (error) {
           console.error("Failed to fetch workout data:", error);
@@ -95,9 +100,9 @@ export default function Home() {
 
   const handleNext = async () => {
     if (currentExercise) {
-      const updatedExercise = { 
-        ...currentExercise, 
-        weight: parseFloat(tempWeight) || currentExercise.weight, 
+      const updatedExercise = {
+        ...currentExercise,
+        weight: parseFloat(tempWeight) || currentExercise.weight,
         reps: parseInt(tempReps) || currentExercise.reps
       };
 
@@ -138,14 +143,14 @@ export default function Home() {
 
   const handleEditWorkout = () => {
     const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    router.push(`/planner/edit?day=${currentDay}`);
+    router.push(`/planner/edit/${currentDay}`);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <WelcomeCard userName={session?.user?.name || 'User'} image={session?.user?.image || 'STANDARD'}/>
-        <StrongestLiftCard userId={session?.user?.id || ''}/>
+        <WelcomeCard userName={session?.user?.name || 'User'} image={session?.user?.image || 'STANDARD'} />
+        <StrongestLiftCard userId={session?.user?.id || ''} />
         <Card className="w-full h-full">
           <CardHeader>
             <h2 className="text-2xl font-bold">Recent Responses</h2>
@@ -162,7 +167,13 @@ export default function Home() {
             <CardTitle>Today’s Workout</CardTitle>
           </CardHeader>
           <CardContent>
-            {workoutWithExercises.length > 0 ? (
+            {isRestDay ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <BedSingle  />
+                <p className="text-2xl font-bold">Rest day</p>
+                <p className="text-lg text-gray-500">Take it easy and recover!</p>
+              </div>
+            ) : workoutWithExercises.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>

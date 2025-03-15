@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
-
+import Image from 'next/image';
 import { authClient } from "@/lib/auth/client"
 
 const chartConfig = {
@@ -164,7 +164,13 @@ export default function Page() {
                                     <p className="text-lg">{record.maxReps} reps</p>
                                     <p className="text-muted-foreground">{record.achievedAt}</p>
                                     <div className="flex justify-center mt-4">
-                                        <img src={record.exerciseImage} alt={record.exerciseName} className="w-auto max-h-[300px] rounded" />
+                                        <Image
+                                            src={record.exerciseImage}
+                                            alt={record.exerciseName}
+                                            width={300}
+                                            height={300}
+                                            className="w-auto max-h-[300px] rounded"
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>

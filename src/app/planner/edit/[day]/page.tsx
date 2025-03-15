@@ -209,10 +209,10 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
   );
 }
 
-export default function EditWorkoutPage({ params }: { params: { day: string } }) {
+export default async function EditWorkoutPage({ params }: { params: Promise<{ day: string }> }) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <EditWorkoutContent params={params} />
+      <EditWorkoutContent params={await params} />
     </Suspense>
   );
 }

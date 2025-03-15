@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Exercise {
   id: number;
@@ -33,7 +34,7 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
     }
 
     fetchRecords();
-  }, []);
+  }, [userId]);
 
   const navigateToStrength = () => {
     router.push('/strength');
@@ -57,7 +58,13 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
               {strongestLift.weight} kg
             </motion.p>
             <div className="flex justify-center mt-4">
-              <img src={strongestLift.image} alt={strongestLift.name} className="w-auto max-h-[300px] rounded" />
+              <Image
+                src={strongestLift.image}
+                alt={strongestLift.name}
+                width={300}
+                height={300}
+                className="w-auto max-h-[300px] rounded"
+              />
             </div>
           </div>
         ) : (

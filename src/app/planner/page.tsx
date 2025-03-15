@@ -1,17 +1,14 @@
 'use client'
-import { useState, useEffect } from 'react';
-import { authClient } from "@/lib/auth/client";
-import { getWorkoutsByDay } from "../actions/getWorkoutsByDay";
 import { WeekPlanner } from "@/components/planner/week-planner";
+import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from 'react';
+import { getWorkoutsByDay } from "../actions/getWorkoutsByDay";
 
 export default function WeekPlannerPage() {
     const {
         data: session,
-        isPending,
-        error,
-        refetch
-    } = authClient.useSession();
+        isPending    } = authClient.useSession();
     const router = useRouter();
 
     const [userId, setUserId] = useState<string | undefined>(undefined);

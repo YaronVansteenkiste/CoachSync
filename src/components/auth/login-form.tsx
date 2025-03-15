@@ -26,6 +26,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
   });
 
   const onSubmit = (values: z.infer<typeof loginSchema>) =>
@@ -64,7 +68,12 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="test@example.com" {...field} />
+                        <Input 
+                          placeholder="test@example.com" 
+                          {...field} 
+                          value={field.value || ''} 
+                          onChange={field.onChange} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -78,7 +87,13 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="*******" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="*******" 
+                          {...field} 
+                          value={field.value || ''} 
+                          onChange={field.onChange} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

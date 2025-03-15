@@ -40,6 +40,10 @@ export default function Home() {
   const [isRestDay, setIsRestDay] = useState(false);
 
   useEffect(() => {
+    if (!session && !isPending) {
+      router.push('/auth/login');
+      return;
+  }
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {

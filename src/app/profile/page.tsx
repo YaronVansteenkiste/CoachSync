@@ -25,6 +25,10 @@ export default function ProfilePage() {
     const [randomString, setRandomString] = useState('');
 
     useEffect(() => {
+        if (!session && !isPending) {
+            router.push('/auth/login');
+            return;
+        }
         async function fetchProgressRecords() {
             if (session?.user?.id) {
                 const userId = session.user.id;

@@ -14,10 +14,11 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { authClient } from "@/lib/auth/client"
+import Image from 'next/image'
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts"
-import Image from 'next/image';
-import { authClient } from "@/lib/auth/client"
 
 const chartConfig = {
     strength: {
@@ -29,45 +30,49 @@ const chartConfig = {
 export default function Page() {
     const {
         data: session,
-        isPending,
-        error,
-        refetch
-    } = authClient.useSession();
+        isPending } = authClient.useSession();
+    const router = useRouter();
     const [personalRecords, setPersonalRecords] = useState<{ id: number; exerciseName: string; exerciseImage: string; maxWeight: number; maxReps: number; achievedAt: string | null; }[]>([]);
     const [chartData, setChartData] = useState<{ subject: string; strength: number }[]>([]);
     const [leastTrained, setLeastTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
     const [overTrained, setOverTrained] = useState<{ bodyPart: string; percentage: number } | null>(null);
 
     useEffect(() => {
-        const userId = session!.user!.id;
-        async function fetchPersonalRecords() {
-            if (!userId) {
-                console.error('User not authenticated');
-                return;
-            }
-            const records = await getPersonalRecords(userId);
-            setPersonalRecords(records);
+        if (!session && !isPending) {
+            router.push('/auth/login');
+            return;
         }
-
-        async function fetchChartData() {
-            if (!userId) {
-                console.error('User not authenticated');
-                return;
+        if (!isPending && session) {
+            const userId = session!.user!.id;
+            async function fetchPersonalRecords() {
+                if (!userId) {
+                    console.error('User not authenticated');
+                    return;
+                }
+                const records = await getPersonalRecords(userId);
+                setPersonalRecords(records);
             }
-            const data = await getChartData(userId);
-            const formattedData = Object.entries(data).map(([subject, strength]) => ({
-                subject,
-                strength: strength * 100,
-            }));
-            setChartData(formattedData);
 
-            const sortedData = formattedData.sort((a, b) => a.strength - b.strength);
-            setLeastTrained({ bodyPart: sortedData[0].subject, percentage: sortedData[0].strength });
-            setOverTrained({ bodyPart: sortedData[sortedData.length - 1].subject, percentage: sortedData[sortedData.length - 1].strength });
+            async function fetchChartData() {
+                if (!userId) {
+                    console.error('User not authenticated');
+                    return;
+                }
+                const data = await getChartData(userId);
+                const formattedData = Object.entries(data).map(([subject, strength]) => ({
+                    subject,
+                    strength: strength * 100,
+                }));
+                setChartData(formattedData);
+
+                const sortedData = formattedData.sort((a, b) => a.strength - b.strength);
+                setLeastTrained({ bodyPart: sortedData[0].subject, percentage: sortedData[0].strength });
+                setOverTrained({ bodyPart: sortedData[sortedData.length - 1].subject, percentage: sortedData[sortedData.length - 1].strength });
+            }
+
+            fetchPersonalRecords();
+            fetchChartData();
         }
-
-        fetchPersonalRecords();
-        fetchChartData();
     }, [session]);
 
     return (

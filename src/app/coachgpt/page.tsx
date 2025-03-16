@@ -63,6 +63,25 @@ export default function Page() {
         fetchWorkouts();
     }, [isPending, session, router]);
 
+    const sanitizeWorkoutData = (workoutsByDay: any) => {
+        console.log('Original workoutsByDay:', workoutsByDay);
+        const sanitizedData = Object.keys(workoutsByDay).reduce((acc: string[], day) => {
+            const dayDataArray = workoutsByDay[day];
+            if (Array.isArray(dayDataArray) && dayDataArray.length > 0) {
+                const dayData = dayDataArray[0];
+                if (dayData && dayData.exercises && dayData.exercises.length > 0) {
+                    const exercises = dayData.exercises.map((exercise: any) => 
+                        `${exercise.name}, weight: ${exercise.weight}, sets: ${exercise.sets}, reps: ${exercise.reps}`
+                    ).join('; ');
+                    acc.push(`${day}: ${exercises}`);
+                }
+            }
+            return acc;
+        }, []);
+        console.log('Sanitized workout data:', sanitizedData);
+        return sanitizedData.length > 0 ? sanitizedData.join('\n') : '';
+    };
+
     const handleDeepSeek = async (query: string) => {
         setIsTyping(true);
         try {
@@ -90,14 +109,22 @@ export default function Page() {
     const handleCheckWorkoutPlan = async () => {
         setIsTyping(true);
         try {
-            const sanitizedWorkouts = { ...workoutsByDay };
-            delete sanitizedWorkouts.userId;
+            if (!workoutsByDay) {
+                throw new Error('No workout data available');
+            }
+
+            const sanitizedWorkouts = sanitizeWorkoutData(workoutsByDay);
+
+            if (!sanitizedWorkouts) {
+                throw new Error('Sanitized workout data is empty');
+            }
+
             const completion = await client.chat.completions.create({
                 model: "deepseek/deepseek-r1:free",
                 messages: [
                     {
                         role: "user",
-                        content: "Check if my workout plan is optimal: " + JSON.stringify(sanitizedWorkouts),
+                        content: "Check if my workout plan is optimal and keep it brief: " + sanitizedWorkouts,
                     },
                 ],
             });

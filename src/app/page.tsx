@@ -26,6 +26,7 @@ import TotalProgressCard from "@/components/home/total-progress";
 import WelcomeCard from "@/components/home/welcome-card";
 import { Exercise, Workout } from "../lib/types";
 import { BedSingle } from "lucide-react";
+import { addExperience } from "@/app/actions/ranking/calculateRank";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();
@@ -38,12 +39,14 @@ export default function Home() {
   const [tempReps, setTempReps] = useState("");
   const [permission, setPermission] = useState<NotificationPermission>();
   const [isRestDay, setIsRestDay] = useState(false);
+  const [workoutDoneToday, setWorkoutDoneToday] = useState<boolean>(false);
 
   useEffect(() => {
     if (!session && !isPending) {
       router.push('/auth/login');
       return;
-  }
+    }
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
@@ -52,6 +55,15 @@ export default function Home() {
         .catch((error) => {
           console.error('Service Worker registration failed:', error);
         });
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const savedWorkoutDate = localStorage.getItem('workoutDate');
+
+    if (savedWorkoutDate === today) {
+      setWorkoutDoneToday(true);
+    } else {
+      localStorage.removeItem('workoutDate');
     }
 
     async function fetchData() {
@@ -139,6 +151,8 @@ export default function Home() {
         setCurrentExerciseIndex(currentExerciseIndex + 1);
         setCurrentExercise(workoutWithExercises[currentExerciseIndex + 1].exercises[0]);
       } else {
+        await addExperience(session!.user?.id || '', 100);
+        localStorage.setItem('workoutDate', new Date().toISOString().split('T')[0]);
         toast.success("Workout complete!");
         document.getElementById("stop-btn")?.click();
       }
@@ -171,9 +185,14 @@ export default function Home() {
             <CardTitle>Today’s Workout</CardTitle>
           </CardHeader>
           <CardContent>
-            {isRestDay ? (
+            {workoutDoneToday ? (
               <div className="flex flex-col items-center justify-center h-full">
-                <BedSingle  />
+                <p className="text-2xl font-bold">Workout already completed today!</p>
+                <p className="text-lg text-gray-500">Come back tomorrow for another session.</p>
+              </div>
+            ) : isRestDay ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <BedSingle />
                 <p className="text-2xl font-bold">Rest day</p>
                 <p className="text-lg text-gray-500">Take it easy and recover!</p>
               </div>

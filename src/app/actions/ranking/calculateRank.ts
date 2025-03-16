@@ -2,7 +2,7 @@
 import { db } from '@/db/client'; 
 import { user } from '@/db/schema/auth';
 import { ranks } from '@/db/schema/challenges';
-import { eq, desc, lte, isNotNull } from 'drizzle-orm';
+import { eq, desc, lte, isNotNull, sql } from 'drizzle-orm';
 
 async function calculateRank(userId: String) {
     const userRecord = await db.select().from(user).where(eq(user.id, userId.toString()));
@@ -63,6 +63,14 @@ async function getLeaderboard() {
     .orderBy(desc(user.totalExperience))
     .limit(20);
     return users;
+}
+
+export async function addExperience(userId: string, experience: number) {
+    await db.update(user)
+        .set({
+            totalExperience: sql`${user.totalExperience} + ${experience}`
+        })
+        .where(eq(user.id, userId));
 }
 
 export { calculateRank, getUserData, getLeaderboard };

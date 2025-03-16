@@ -1,8 +1,8 @@
 'use server';
 import { db } from '@/db/client'; 
 import { user } from '@/db/schema/auth';
-import { ranks, challenges } from '@/db/schema/challenges';
-import { eq, desc, lte } from 'drizzle-orm';
+import { ranks } from '@/db/schema/challenges';
+import { eq, desc, lte, isNotNull } from 'drizzle-orm';
 
 async function calculateRank(userId: String) {
     const userRecord = await db.select().from(user).where(eq(user.id, userId.toString()));
@@ -47,9 +47,22 @@ async function getUserData(userId: string) {
         ? await db.select().from(ranks).where(eq(ranks.level, userRank[0].level + 1)).limit(1)
         : [];
 
-    const challengesList = await db.select().from(challenges);
-
-    return { userExperience, userRank, nextRank, challengesList };
+    return { userExperience, userRank, nextRank };
 }
 
-export { calculateRank, getUserData };
+async function getLeaderboard() {
+    const users = await db.select({
+        id: user.id,
+        name: user.name,
+        experience: user.totalExperience,
+        rankName: ranks.name
+    })
+    .from(user)
+    .leftJoin(ranks, eq(user.rankId, ranks.id))
+    .where(isNotNull(user.rankId))
+    .orderBy(desc(user.totalExperience))
+    .limit(20);
+    return users;
+}
+
+export { calculateRank, getUserData, getLeaderboard };

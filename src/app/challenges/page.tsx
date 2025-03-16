@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { calculateRank, getUserData } from "@/app/actions/ranking/calculateRank";
+import { calculateRank, getUserData, getLeaderboard } from "@/app/actions/ranking/calculateRank";
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
+import { Table, TableHead, TableRow, TableCell, TableBody, TableCaption, TableHeader } from "@/components/ui/table";
 
 export default function Page() {
   const {
@@ -20,8 +21,8 @@ export default function Page() {
   const [userExperience, setUserExperience] = useState<number>(0);
   const [userRank, setUserRank] = useState<any[]>([]);
   const [nextRank, setNextRank] = useState<any[]>([]);
-  const [challengesList, setChallengesList] = useState<any[]>([]);
   const [rankIdIsNull, setRankIdIsNull] = useState<boolean>(false);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,11 +41,13 @@ export default function Page() {
           console.error('User ID is not a string:', userId);
         }
 
-        const { userExperience, userRank, nextRank, challengesList } = await getUserData(userId);
+        const { userExperience, userRank, nextRank } = await getUserData(userId);
         setUserExperience(userExperience);
         setUserRank(userRank);
         setNextRank(nextRank);
-        setChallengesList(challengesList);
+
+        const leaderboardData = await getLeaderboard();
+        setLeaderboard(leaderboardData);
       }
     };
 
@@ -63,7 +66,7 @@ export default function Page() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-4xl font-bold">Challenges Dashboard</h1>
+      <h1 className="text-4xl font-bold">Leaderboard</h1>
 
       <Card className="shadow-lg p-6">
         <div className="flex justify-between items-center">
@@ -79,14 +82,28 @@ export default function Page() {
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {challengesList.map((challenge) => (
-          <Card key={challenge.id} className="shadow-lg p-4">
-            <h3 className="font-semibold">{challenge.title}</h3>
-            <p className="text-sm text-gray-500">{challenge.description}</p>
-            <Button className="mt-4 text-blue-500">Accept Challenge</Button>
-          </Card>
-        ))}
+      <div>
+        <Table>
+        <TableCaption>A list of top 20 challengers.</TableCaption>
+        <TableHeader>
+            <TableRow>
+              <TableHead ></TableHead >
+              <TableHead >User</TableHead >
+              <TableHead >Rank</TableHead >
+              <TableHead >Experience</TableHead >
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {leaderboard.map((user, index) => (
+              <TableRow key={user.id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.rankName}</TableCell>
+                <TableCell>{user.experience}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchWorkout } from '@/app/actions/workouts/fetchWorkout';
@@ -13,6 +12,163 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { authClient } from "@/lib/auth/client";
 import { Exercise, Errors } from '@/lib/types';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
+const ItemTypes = {
+  CARD: 'card',
+};
+
+function DraggableCard({ exercise, index, moveCard, handleInputChange, handleRemoveExercise, errors }: { exercise: Exercise, index: number, moveCard: (dragIndex: number, hoverIndex: number) => void, handleInputChange: (id: number, field: string, value: string | number) => void, handleRemoveExercise: (id: number) => void, errors: Errors }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [{ handlerId }, drop] = useDrop<{ id: number; index: number }, void, { handlerId: string | symbol }>({
+    accept: ItemTypes.CARD,
+    collect: (monitor) => {
+      const handlerId = monitor.getHandlerId();
+      return {
+        handlerId: handlerId as string | symbol,
+      };
+    },
+    hover(item, monitor) {
+      if (!ref.current || item.id === undefined || item.index < 0) {
+        return;
+      }
+      const dragIndex = item.index;
+      const hoverIndex = index;
+
+      if (dragIndex === hoverIndex) {
+        return;
+      }
+
+      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) {
+        return;
+      }
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+        return;
+      }
+
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
+      }
+
+      moveCard(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+
+  const [{ isDragging }, drag] = useDrag({
+    type: ItemTypes.CARD,
+    item: { id: exercise.id, index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  drag(drop(ref));
+
+  return (
+    <Card key={exercise.id} ref={ref} style={{ opacity: isDragging ? 0.5 : 1, height: 'auto' }} data-handler-id={handlerId}>
+      <CardHeader>
+        <CardTitle>{exercise.name}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-gray-500">Category: {exercise.category} | Equipment: {exercise.equipment}</p>
+        <div className="mt-2">
+          <label className="block text-sm font-medium">Weight</label>
+          <Input
+            type="number"
+            value={exercise.weight ?? ''}
+            onChange={(e) => handleInputChange(exercise.id, 'weight', e.target.value)}
+            min="0"
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+          {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0 || exercise.weight === 9) && (
+            <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+          )}
+        </div>
+        <div className="mt-2">
+          <label className="block text-sm font-medium">Sets</label>
+          <Input
+            type="number"
+            value={exercise.sets ?? ''}
+            onChange={(e) => handleInputChange(exercise.id, 'sets', e.target.value)}
+            min="0"
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+          {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
+            <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+          )}
+        </div>
+        <div className="mt-2">
+          <label className="block text-sm font-medium">Reps</label>
+          <Input
+            type="number"
+            value={exercise.reps ?? ''}
+            onChange={(e) => handleInputChange(exercise.id, 'reps', e.target.value)}
+            min="0"
+            onMouseDown={(e) => e.stopPropagation()}
+          />
+          {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
+            <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
+          )}
+        </div>
+        <Button onClick={() => handleRemoveExercise(exercise.id)} className="w-full mt-2">
+          Remove Exercise
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AddExerciseCard({ exercise, handleAddExercise }: { exercise: Exercise, handleAddExercise: (exerciseId: number) => void }) {
+  const [{ isDragging }, drag] = useDrag({
+    type: ItemTypes.CARD,
+    item: { id: exercise.id, index: -1 },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult();
+      if (item && dropResult) {
+        handleAddExercise(item.id);
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  console.log("AddExerciseCard", exercise, handleAddExercise)
+
+  return (
+    <div ref={drag as unknown as React.Ref<HTMLDivElement>} style={{ opacity: isDragging ? 0.5 : 1, height: 'auto' }}>
+      <Card key={exercise.id} className="p-2 mt-2">
+        <CardHeader>
+          <CardTitle className="text-sm">{exercise.name}</CardTitle>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+}
+
+function EmptyDropZone({ handleAddExercise }: { handleAddExercise: (exerciseId: number) => void }) {
+  const [{ isOver }, drop] = useDrop({
+    accept: ItemTypes.CARD,
+    drop: (item: { id: number }) => {
+      handleAddExercise(item.id);
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+
+  return (
+    <div ref={drop as unknown as React.Ref<HTMLDivElement>} className={`border-2 border-dashed ${isOver ? 'border-blue-500' : 'border-gray-300'} h-64 flex items-center justify-center`}>
+      <p className="text-gray-500">Drag exercises here to add them to your workout</p>
+    </div>
+  );
+}
 
 function EditWorkoutContent({ params }: { params: { day: string } }) {
   const {
@@ -28,7 +184,6 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
   const [exercisesData, setExercisesData] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([]);
-  const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
@@ -108,16 +263,17 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
     }
   }
 
-  async function handleAddExercise() {
-    if (selectedExerciseId === null) return;
-
+  async function handleAddExercise(exerciseId: number) {
+    if (workoutId === null) {
+      console.error('Workout ID is null');
+      return;
+    }
     try {
-      const newExercise = await addExercise(workoutId, selectedExerciseId);
-      const exerciseDetails = availableExercises.find(ex => ex.id === selectedExerciseId);
+      const newExercise = await addExercise(workoutId, exerciseId);
+      const exerciseDetails = availableExercises.find(ex => ex.id === exerciseId);
       if (exerciseDetails) {
         setExercisesData((prev) => [...prev, { ...newExercise, name: exerciseDetails.name, category: exerciseDetails.category, equipment: exerciseDetails.equipment }]);
       }
-      setSelectedExerciseId(null);
     } catch (error) {
       console.error('Error adding exercise:', error);
     }
@@ -133,86 +289,60 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
     }
   }
 
+  const moveCard = (dragIndex: number, hoverIndex: number) => {
+    const dragCard = exercisesData[dragIndex];
+    setExercisesData((prev) => {
+      const updated = [...prev];
+      updated.splice(dragIndex, 1);
+      updated.splice(hoverIndex, 0, dragCard);
+      return updated;
+    });
+  };
+
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center">Edit {WORKOUT_NAME} Workout</h1>
-      {loading ? (
-        <p className="text-center">Loading...</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {exercisesData.map((exercise) => (
-            <Card key={exercise.id}>
-              <CardHeader>
-                <CardTitle>{exercise.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">Category: {exercise.category} | Equipment: {exercise.equipment}</p>
-                <div className="mt-2">
-                  <label className="block text-sm font-medium">Weight</label>
-                  <Input
-                    type="number"
-                    value={exercise.weight ?? ''}
-                    onChange={(e) => handleInputChange(exercise.id, 'weight', e.target.value)}
-                    min="0"
+    <DndProvider backend={HTML5Backend}>
+      <div className="max-w-5xl mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-6 text-center">Edit {WORKOUT_NAME} Workout</h1>
+        {loading ? (
+          <p className="text-center">Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {exercisesData.length === 0 ? (
+                <EmptyDropZone handleAddExercise={handleAddExercise} />
+              ) : (
+                exercisesData.map((exercise, index) => (
+                  <DraggableCard
+                    key={exercise.id}
+                    index={index}
+                    exercise={exercise}
+                    moveCard={moveCard}
+                    handleInputChange={handleInputChange}
+                    handleRemoveExercise={handleRemoveExercise}
+                    errors={errors}
                   />
-                  {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0 || exercise.weight === 9) && (
-                    <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
-                  )}
-                </div>
-                <div className="mt-2">
-                  <label className="block text-sm font-medium">Sets</label>
-                  <Input
-                    type="number"
-                    value={exercise.sets ?? ''}
-                    onChange={(e) => handleInputChange(exercise.id, 'sets', e.target.value)}
-                    min="0"
-                  />
-                  {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
-                    <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
-                  )}
-                </div>
-                <div className="mt-2">
-                  <label className="block text-sm font-medium">Reps</label>
-                  <Input
-                    type="number"
-                    value={exercise.reps ?? ''}
-                    onChange={(e) => handleInputChange(exercise.id, 'reps', e.target.value)}
-                    min="0"
-                  />
-                  {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
-                    <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
-                  )}
-                </div>
-                <Button onClick={() => handleRemoveExercise(exercise.id)} className="w-full mt-2">
-                  Remove Exercise
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-      <div className="mt-6">
-        <label className="block text-sm font-medium">Add Exercise</label>
-        <select
-          value={selectedExerciseId ?? ''}
-          onChange={(e) => setSelectedExerciseId(Number(e.target.value))}
-          className="w-full mt-2"
-        >
-          <option value="" disabled>Select an exercise</option>
-          {availableExercises.map((exercise) => (
-            <option key={exercise.id} value={exercise.id}>
-              {exercise.name} - {exercise.category} - {exercise.equipment}
-            </option>
-          ))}
-        </select>
-        <Button onClick={handleAddExercise} className="w-full mt-2">
-          Add Exercise
+                ))
+              )}
+            </div>
+            <div className="lg:col-span-1 lg:h-full">
+              <h2 className="text-xl font-bold mb-4">Add Exercise</h2>
+              <div className="overflow-y-auto max-h-80 lg:h-full">
+              {availableExercises.map((exercise) => (
+                <AddExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                handleAddExercise={handleAddExercise}
+                />
+              ))}
+              </div>
+            </div>
+          </div>
+        )}
+        <Button onClick={handleSave} className="w-full mt-4">
+          Save & Go Back
         </Button>
       </div>
-      <Button onClick={handleSave} className="w-full mt-4">
-        Save & Go Back
-      </Button>
-    </div>
+    </DndProvider>
   );
 }
 

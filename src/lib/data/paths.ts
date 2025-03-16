@@ -22,8 +22,8 @@ export const paths = [
         icon: Dumbbell,
     },
     {
-        name: "Challenges",
-        href: "/challenges",
+        name: "Challenger",
+        href: "/challenger",
         icon: Trophy,
     },
     {

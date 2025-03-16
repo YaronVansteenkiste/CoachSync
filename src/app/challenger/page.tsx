@@ -62,7 +62,7 @@ export default function Page() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-4xl font-bold">Leaderboard</h1>
+      <h1 className="text-4xl font-bold">Challenger</h1>
       <Card className="shadow-lg p-6">
         <div className="flex justify-center">
           {userRank[0]?.image && (

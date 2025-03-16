@@ -1,6 +1,6 @@
 "use client"
-import { getChartData } from "@/app/actions/getChartData"
-import { getPersonalRecords } from "@/app/actions/getPersonalRecords"
+import { getChartData } from "@/app/actions/charts/getChartData"
+import { getPersonalRecords } from "@/app/actions/personal-records/getPersonalRecords"
 import {
     Card,
     CardContent,

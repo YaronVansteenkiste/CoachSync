@@ -5,7 +5,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { useEffect, useState } from "react";
-import { getProgressRecord } from '@/app/actions/progressRecords';
+import { getProgressRecord } from '@/app/actions/charts/progressRecords';
 
 interface TotalProgressCardProps {
   userId: string;

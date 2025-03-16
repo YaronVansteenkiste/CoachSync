@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getRecentResponses } from '@/app/actions/getRecentResponses';
+import { getRecentResponses } from '@/app/actions/coachgpt/getRecentResponses';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 

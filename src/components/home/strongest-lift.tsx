@@ -1,4 +1,4 @@
-import { getPersonalRecords } from '@/app/actions/getPersonalRecords';
+import { getPersonalRecords } from '@/app/actions/personal-records/getPersonalRecords';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';

@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { OpenAI } from 'openai';
-import { getWorkoutsByDay } from '@/app/actions/getWorkoutsByDay';
+import { getWorkoutsByDay } from '@/app/actions/workouts/getWorkoutsByDay';
 import { marked } from 'marked';
-import { saveResponseToDB } from '@/app/actions/saveResponseToDB';
+import { saveResponseToDB } from '@/app/actions/coachgpt/saveResponseToDB';
 import {
     Card,
     CardContent, CardHeader

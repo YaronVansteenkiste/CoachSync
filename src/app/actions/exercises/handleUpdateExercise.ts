@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export async function handleUpdate(exerciseId: number, updatedData: any) {
+export async function handleUpdateExercise(exerciseId: number, updatedData: any) {
     await db
         .update(workoutExercises)
         .set(updatedData)

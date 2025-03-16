@@ -3,7 +3,7 @@ import { WeekPlanner } from "@/components/planner/week-planner";
 import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
-import { getWorkoutsByDay } from "../actions/getWorkoutsByDay";
+import { getWorkoutsByDay } from "../actions/workouts/getWorkoutsByDay";
 
 export default function WeekPlannerPage() {
     const {

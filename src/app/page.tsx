@@ -1,5 +1,5 @@
 'use client'
-import { createOrUpdatePersonalRecord } from "@/app/actions/getPersonalRecords";
+import { createOrUpdatePersonalRecord } from "@/app/actions/personal-records/getPersonalRecords";
 import RecentResponses from '@/components/home/recent-responses';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,9 +18,9 @@ import { authClient } from "@/lib/auth/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
-import { fetchWorkoutData } from "./actions/fetchWorkoutData";
-import { getExerciseIdByName } from "./actions/getWorkoutExercises";
-import { updateWorkoutExercise } from "./actions/updateWorkoutExercise";
+import { fetchWorkoutData } from "./actions/workouts/fetchWorkoutData";
+import { getExerciseIdByName } from "./actions/workouts/getWorkoutExercises";
+import { updateWorkoutExercise } from "./actions/exercises/updateWorkoutExercise";
 import StrongestLiftCard from "@/components/home/strongest-lift";
 import TotalProgressCard from "@/components/home/total-progress";
 import WelcomeCard from "@/components/home/welcome-card";

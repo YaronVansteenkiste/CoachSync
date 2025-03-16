@@ -1,5 +1,5 @@
 "use server";
-import { getExercisesFromWorkout } from "@/app/actions/getExercisesFromWorkout";
+import { getExercisesFromWorkout } from "@/app/actions/exercises/getExercisesFromWorkout";
 import { db } from "@/db/client";
 import { workouts as workoutsTable } from "@/db/schema";
 import { eq, and } from "drizzle-orm";

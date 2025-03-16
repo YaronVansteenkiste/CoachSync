@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { authClient } from '@/lib/auth/client';
 import { useRouter } from 'next/navigation';
-import { getProgressRecord, addProgressRecord } from '@/app/actions/progressRecords';
+import { getProgressRecord, addProgressRecord } from '@/app/actions/charts/progressRecords';
 import BoringAvatar from 'boring-avatars';
-import { changeProfilePic } from '@/app/actions/changeProfilePic';
+import { changeProfilePic } from '@/app/actions/profile/changeProfilePic';
 
 
 export default function ProfilePage() {

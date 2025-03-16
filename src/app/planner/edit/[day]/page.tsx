@@ -1,12 +1,13 @@
 'use client';
+import React from 'react';
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchWorkout } from '@/app/actions/fetchWorkout';
-import { handleUpdate } from '@/app/actions/handleUpdate';
-import { addExercise } from '@/app/actions/addExercise';
-import { removeExercise } from '@/app/actions/removeExercise';
-import { fetchExercises } from '@/app/actions/fetchExercises';
+import { fetchWorkout } from '@/app/actions/workouts/fetchWorkout';
+import { handleUpdateExercise } from '@/app/actions/exercises/handleUpdateExercise';
+import { addExercise } from '@/app/actions/exercises/addExercise';
+import { removeExercise } from '@/app/actions/exercises/removeExercise';
+import { fetchExercises } from '@/app/actions/exercises/fetchExercises';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -31,15 +32,15 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
-    async function loadParams() {
+    const unwrapParams = async () => {
       const unwrappedParams = await params;
       setWORKOUT_NAME(unwrappedParams.day);
-    }
-    loadParams();
+    };
+    unwrapParams();
   }, [params]);
 
   useEffect(() => {
-    async function loadWorkout() {
+    const loadWorkout = async () => {
       if (!session && !isPending) {
         router.push('/auth/login');
         return;
@@ -58,25 +59,28 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
           setLoading(false);
         }
       }
-    }
+    };
+
     if (WORKOUT_NAME) {
       loadWorkout();
     }
 
-    async function loadExercises() {
+    const loadExercises = async () => {
       try {
         const exercises = await fetchExercises();
         setAvailableExercises(exercises);
       } catch (error) {
         console.error('Error fetching exercises:', error);
       }
-    }
+    };
+
     loadExercises();
   }, [WORKOUT_NAME, session, isPending, router]);
 
   function handleInputChange(exerciseId: number, field: string, value: string | number) {
+    const numericValue = value === '' ? 0 : Math.max(0, Number(value));
     setExercisesData((prev) =>
-      prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: value } : ex))
+      prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: numericValue } : ex))
     );
   }
 
@@ -96,7 +100,7 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
 
     try {
       for (const exercise of exercisesData) {
-        await handleUpdate(exercise.id, exercise);
+        await handleUpdateExercise(exercise.id, exercise);
       }
       router.push('/planner');
     } catch (error) {
@@ -149,6 +153,7 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
                     type="number"
                     value={exercise.weight ?? ''}
                     onChange={(e) => handleInputChange(exercise.id, 'weight', e.target.value)}
+                    min="0"
                   />
                   {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0 || exercise.weight === 9) && (
                     <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
@@ -160,6 +165,7 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
                     type="number"
                     value={exercise.sets ?? ''}
                     onChange={(e) => handleInputChange(exercise.id, 'sets', e.target.value)}
+                    min="0"
                   />
                   {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
                     <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
@@ -171,6 +177,7 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
                     type="number"
                     value={exercise.reps ?? ''}
                     onChange={(e) => handleInputChange(exercise.id, 'reps', e.target.value)}
+                    min="0"
                   />
                   {errors[exercise.id] && (exercise.weight === null || exercise.weight === undefined || exercise.weight === 0) && (
                     <p className="text-red-500 text-sm">{errors[exercise.id]}</p>
@@ -209,10 +216,11 @@ function EditWorkoutContent({ params }: { params: { day: string } }) {
   );
 }
 
-export default async function EditWorkoutPage({ params }: { params: Promise<{ day: string }> }) {
+export default function EditWorkoutPage({ params }: { params: Promise<{ day: string }> }) {
+  const unwrappedParams = React.use(params);
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <EditWorkoutContent params={await params} />
+      <EditWorkoutContent params={unwrappedParams} />
     </Suspense>
   );
 }

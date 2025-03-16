@@ -1,6 +1,10 @@
 'use client'
 import { createOrUpdatePersonalRecord } from "@/app/actions/personal-records/getPersonalRecords";
+import { addExperience } from "@/app/actions/ranking/calculateRank";
 import RecentResponses from '@/components/home/recent-responses';
+import StrongestLiftCard from "@/components/home/strongest-lift";
+import TotalProgressCard from "@/components/home/total-progress";
+import WelcomeCard from "@/components/home/welcome-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -15,18 +19,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { authClient } from "@/lib/auth/client";
+import { BedSingle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
+import { Exercise, Workout } from "../lib/types";
+import { updateWorkoutExercise } from "./actions/exercises/updateWorkoutExercise";
 import { fetchWorkoutData } from "./actions/workouts/fetchWorkoutData";
 import { getExerciseIdByName } from "./actions/workouts/getWorkoutExercises";
-import { updateWorkoutExercise } from "./actions/exercises/updateWorkoutExercise";
-import StrongestLiftCard from "@/components/home/strongest-lift";
-import TotalProgressCard from "@/components/home/total-progress";
-import WelcomeCard from "@/components/home/welcome-card";
-import { Exercise, Workout } from "../lib/types";
-import { BedSingle } from "lucide-react";
-import { addExperience } from "@/app/actions/ranking/calculateRank";
 
 export default function Home() {
   const { data: session, isPending } = authClient.useSession();

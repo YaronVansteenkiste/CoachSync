@@ -1,14 +1,14 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
+import { addProgressRecord, getProgressRecord } from '@/app/actions/charts/progressRecords';
+import { changeProfilePic } from '@/app/actions/profile/changeProfilePic';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { authClient } from '@/lib/auth/client';
-import { useRouter } from 'next/navigation';
-import { getProgressRecord, addProgressRecord } from '@/app/actions/charts/progressRecords';
 import BoringAvatar from 'boring-avatars';
-import { changeProfilePic } from '@/app/actions/profile/changeProfilePic';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
     const {

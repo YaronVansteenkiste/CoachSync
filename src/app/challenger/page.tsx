@@ -10,7 +10,7 @@ import { Table, TableHead, TableRow, TableCell, TableBody, TableCaption, TableHe
 import Image from 'next/image';
 import BoringAvatar from 'boring-avatars';
 
-export default function Page() {
+export default function ChallengerPage() {
   const {
     data: session,
     isPending,

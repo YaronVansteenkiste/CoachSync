@@ -9,7 +9,7 @@ export function MobileNavi() {
     const pathname = usePathname();
 
     return (
-        <nav className="fixed z-40 bottom-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md border-t border-gray-300 dark:border-gray-700 p-2">
+        <nav className="fixed z-40 bottom-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md border-t border-gray-300 dark:border-gray-700 p-2 pb-6"> {/* Added pb-6 for iOS home bar */}
             <div className="flex justify-around items-center">
                 {paths.map(({ name, href, icon: Icon }, index) => (
                     <Link

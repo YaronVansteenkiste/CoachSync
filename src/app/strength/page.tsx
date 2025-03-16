@@ -27,7 +27,7 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export default function Page() {
+export default function StrengthPage() {
     const {
         data: session,
         isPending } = authClient.useSession();

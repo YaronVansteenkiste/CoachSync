@@ -26,7 +26,7 @@ const presetQuestions = [
     "What are some good cardio exercises for beginners?",
 ];
 
-export default function Page() {
+export default function CoachGPTPage() {
     const {
         data: session,
         isPending,

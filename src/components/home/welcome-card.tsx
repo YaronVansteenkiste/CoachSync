@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {gymQuotes} from '@/lib/quotes'
 import { useEffect, useState } from "react";
+import { getUserData } from "@/app/actions/ranking/calculateRank"; 
+import Image from 'next/image'; 
 
-export default function WelcomeCard({ userName, image }: { userName: string, image: string }) {
+export default function WelcomeCard({ userName, image, userId }: { userName: string, image: string, userId: string }) {
   const router = useRouter();
   const [randomQuote, setRandomQuote] = useState("");
   const [quoteKey, setQuoteKey] = useState(0);
+  const [rankImage, setRankImage] = useState<string | null>(null); 
 
   useEffect(() => {
     const updateQuote = () => {
@@ -21,6 +24,22 @@ export default function WelcomeCard({ userName, image }: { userName: string, ima
     const intervalId = setInterval(updateQuote, 10000); 
 
     return () => clearInterval(intervalId); 
+  }, []);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        if (userId) {
+          const { userRank } = await getUserData(userId);
+          if (userRank && userRank.length > 0 && userRank[0].image) {
+            setRankImage(userRank[0].image);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    }
+    fetchUserData();
   }, []);
 
   const handleProfileNavigation = () => {
@@ -50,7 +69,7 @@ export default function WelcomeCard({ userName, image }: { userName: string, ima
   return (
     <motion.div initial="hidden" animate="visible" variants={cardVariants} className="mb-0 h-full">
       <Card className="h-full">
-        <CardHeader className="flex flex-col items-center">
+        <CardHeader className="flex flex-col items-center relative">
           <motion.div variants={userNameVariants}>
             <CardTitle className="my-3 text-center text-lg">
               <motion.span
@@ -71,12 +90,19 @@ export default function WelcomeCard({ userName, image }: { userName: string, ima
               </motion.span>
             </CardTitle>
           </motion.div>
-          <BoringAvatar
-            size={100}
-            name={image}
-            variant="beam"
-            colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
-          />
+          <div className="relative">
+            <BoringAvatar
+              size={100}
+              name={image}
+              variant="beam"
+              colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
+            />
+            {rankImage && (
+              <div className="absolute bottom-0 right-0">
+                <Image src={rankImage} alt="Rank Image" width={30} height={30} />
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="text-center">
           <motion.p key={quoteKey} initial="hidden" animate="visible" variants={quoteVariants} className="text-gray-500 italic">

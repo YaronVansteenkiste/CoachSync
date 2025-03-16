@@ -70,7 +70,9 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
         ) : (
           <p>No personal records set</p>
         )}
-        <Button className="w-full my-2 w-50" onClick={navigateToStrength}>Check your strengths</Button>
+        <div className="flex justify-center">
+          <Button className="w-full my-2 w-50" onClick={navigateToStrength}>Check your strengths</Button>
+        </div>
       </CardContent>
     </Card>
   );

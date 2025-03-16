@@ -130,8 +130,8 @@ function AddExerciseCard({ exercise, handleAddExercise }: { exercise: Exercise, 
     type: ItemTypes.CARD,
     item: { id: exercise.id, index: -1 },
     end: (item, monitor) => {
-      const dropResult = monitor.getDropResult();
-      if (item && dropResult) {
+      const dropResult = monitor.getDropResult<{ added?: boolean }>();
+      if (item && (!dropResult || !dropResult.added)) {
         handleAddExercise(item.id);
       }
     },
@@ -139,7 +139,6 @@ function AddExerciseCard({ exercise, handleAddExercise }: { exercise: Exercise, 
       isDragging: monitor.isDragging(),
     }),
   });
-  console.log("AddExerciseCard", exercise, handleAddExercise)
 
   return (
     <div ref={drag as unknown as React.Ref<HTMLDivElement>} style={{ opacity: isDragging ? 0.5 : 1, height: 'auto' }}>
@@ -157,6 +156,7 @@ function EmptyDropZone({ handleAddExercise }: { handleAddExercise: (exerciseId: 
     accept: ItemTypes.CARD,
     drop: (item: { id: number }) => {
       handleAddExercise(item.id);
+      return { added: true }; // Return a result indicating the drop was handled
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),

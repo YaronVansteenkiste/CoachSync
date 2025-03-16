@@ -8,7 +8,7 @@ export const user = pgTable("user", {
     rankId: integer('rank_id').references(() => ranks.id),
 	email: text('email').notNull().unique(),
 	emailVerified: boolean('email_verified').notNull(),
-	image: text('image'),
+	image: text('image').notNull().default('STANDARD'),
 	createdAt: timestamp('created_at').notNull(),
 	updatedAt: timestamp('updated_at').notNull()
 	

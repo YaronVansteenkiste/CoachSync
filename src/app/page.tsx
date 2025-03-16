@@ -154,6 +154,7 @@ export default function Home() {
         await addExperience(session!.user?.id || '', 100);
         localStorage.setItem('workoutDate', new Date().toISOString().split('T')[0]);
         toast.success("Workout complete!");
+        setWorkoutDoneToday(true); 
         document.getElementById("stop-btn")?.click();
       }
     }

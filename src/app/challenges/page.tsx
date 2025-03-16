@@ -23,7 +23,6 @@ export default function Page() {
   const [userExperience, setUserExperience] = useState<number>(0);
   const [userRank, setUserRank] = useState<any[]>([]);
   const [nextRank, setNextRank] = useState<any[]>([]);
-  const [rankIdIsNull, setRankIdIsNull] = useState<boolean>(false);
   const [leaderboard, setLeaderboard] = useState<any[]>([]);
 
   useEffect(() => {
@@ -56,14 +55,9 @@ export default function Page() {
     fetchData();
   }, [session]);
 
-  if (rankIdIsNull) {
-    alert("Oh hi it's your first time!");
-    return null;
-  }
-
   const currentLevelXp = userRank[0]?.requiredXp || 0;
   const nextLevelXp = nextRank[0]?.requiredXp || 1;
-  const isMaxLevel = nextRank.length === 0;
+  const isMaxLevel = nextRank?.length === 0;
   const progressValue = isMaxLevel ? 100 : ((userExperience - currentLevelXp) / (nextLevelXp - currentLevelXp)) * 100;
 
   return (

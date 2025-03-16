@@ -18,7 +18,7 @@ async function calculateRank(userId: String) {
         .orderBy(desc(ranks.requiredXp))
         .limit(1);
 
-    if (rank.length > 0) {
+    if (rank && rank.length > 0) {
         await db.update(user)
             .set({ rankId: rank[0].id })
             .where(eq(user.id, userId.toString()));
@@ -37,16 +37,15 @@ async function getUserData(userId: string) {
     }
     const userExperience = userRecord[0].totalExperience;
 
-
     const userRank = userRecord[0].rankId !== null
         ? await db.select().from(ranks).where(eq(ranks.id, userRecord[0].rankId))
         : [];
 
-
-    const nextRank = userRank.length > 0
+    console.log(userRank)
+    const nextRank = (userRank && userRank.length > 0)
         ? await db.select().from(ranks).where(eq(ranks.level, userRank[0].level + 1)).limit(1)
         : [];
-
+    console.log(nextRank)
     return { userExperience, userRank, nextRank };
 }
 
@@ -64,6 +63,11 @@ async function getLeaderboard() {
     .where(isNotNull(user.rankId))
     .orderBy(desc(user.totalExperience))
     .limit(20);
+
+    if (!users) {
+        throw new Error('No users found on the leaderboard');
+    }
+
     return users;
 }
 

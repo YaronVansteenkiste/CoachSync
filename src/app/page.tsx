@@ -229,7 +229,13 @@ export default function Home() {
           <Drawer>
             <div className="flex flex-col mx-5 mb-5">
               <DrawerTrigger asChild>
-                <Button className="flex flex-col w-full" onClick={requestPermission}>Start Workout</Button>
+                <Button 
+                  className="flex flex-col w-full" 
+                  onClick={requestPermission} 
+                  disabled={workoutDoneToday || isRestDay}
+                >
+                  Start Workout
+                </Button>
               </DrawerTrigger>
             </div>
             <DrawerContent>

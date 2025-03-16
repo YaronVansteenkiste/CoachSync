@@ -10,7 +10,6 @@ import { getProgressRecord, addProgressRecord } from '@/app/actions/charts/progr
 import BoringAvatar from 'boring-avatars';
 import { changeProfilePic } from '@/app/actions/profile/changeProfilePic';
 
-
 export default function ProfilePage() {
     const {
         data: session,
@@ -23,6 +22,8 @@ export default function ProfilePage() {
     const [weight, setWeight] = useState('');
     const [bodyFatPercentage, setBodyFatPercentage] = useState('');
     const [randomString, setRandomString] = useState('');
+    const [weightError, setWeightError] = useState<string | null>(null);
+    const [bodyFatPercentageError, setBodyFatPercentageError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!session && !isPending) {
@@ -46,6 +47,24 @@ export default function ProfilePage() {
 
     const handleAddProgressRecord = async (e: React.FormEvent) => {
         e.preventDefault();
+        let valid = true;
+
+        if (parseFloat(weight) <= 0) {
+            setWeightError('Please enter a value greater than 0');
+            valid = false;
+        } else {
+            setWeightError(null);
+        }
+
+        if (parseFloat(bodyFatPercentage) <= 0) {
+            setBodyFatPercentageError('Please enter a value greater than 0');
+            valid = false;
+        } else {
+            setBodyFatPercentageError(null);
+        }
+
+        if (!valid) return;
+
         if (session?.user?.id) {
             const userId = session.user.id;
             await addProgressRecord(userId, parseFloat(weight), parseFloat(bodyFatPercentage));
@@ -98,16 +117,21 @@ export default function ProfilePage() {
                                 value={weight}
                                 onChange={(e) => setWeight(e.target.value)}
                                 required
+                                min="0"
                             />
+                            {weightError && <p className="text-red-500 text-sm">{weightError}</p>}
                         </div>
                         <div className="mb-2">
                             <label className="block text-sm font-medium">Body Fat Percentage</label>
                             <Input
                                 type="number"
+                                step="0.1"
                                 value={bodyFatPercentage}
                                 onChange={(e) => setBodyFatPercentage(e.target.value)}
                                 required
+                                min="0"
                             />
+                            {bodyFatPercentageError && <p className="text-red-500 text-sm">{bodyFatPercentageError}</p>}
                         </div>
                         <Button type="submit" className="w-full">Add Progress Record</Button>
                     </form>

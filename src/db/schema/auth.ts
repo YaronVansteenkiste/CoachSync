@@ -1,5 +1,5 @@
 import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
-import { ranks } from "./challenges";
+import { ranks } from "./ranks";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),

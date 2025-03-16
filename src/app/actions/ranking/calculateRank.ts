@@ -1,7 +1,7 @@
 'use server';
 import { db } from '@/db/client'; 
 import { user } from '@/db/schema/auth';
-import { ranks } from '@/db/schema/challenges';
+import { ranks } from '@/db/schema/ranks';
 import { eq, desc, lte, isNotNull, sql } from 'drizzle-orm';
 
 async function calculateRank(userId: String) {
@@ -54,8 +54,10 @@ async function getLeaderboard() {
     const users = await db.select({
         id: user.id,
         name: user.name,
+        image: user.image,
         experience: user.totalExperience,
-        rankName: ranks.name
+        rankName: ranks.name,
+        rankImage: ranks.image
     })
     .from(user)
     .leftJoin(ranks, eq(user.rankId, ranks.id))

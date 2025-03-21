@@ -2,28 +2,25 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import BoringAvatar from "boring-avatars";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import {gymQuotes} from '@/lib/quotes'
+import { gymQuotes } from '@/lib/quotes';
 import { useEffect, useState } from "react";
-import { getUserData } from "@/app/actions/ranking/calculateRank"; 
-import Image from 'next/image'; 
+import { getUserData } from "@/app/actions/ranking/calculateRank";
+import Image from 'next/image';
 
 export default function WelcomeCard({ userName, image, userId }: { userName: string, image: string, userId: string }) {
   const router = useRouter();
   const [randomQuote, setRandomQuote] = useState("");
-  const [quoteKey, setQuoteKey] = useState(0);
-  const [rankImage, setRankImage] = useState<string | null>(null); 
+  const [rankImage, setRankImage] = useState<string | null>(null);
 
   useEffect(() => {
     const updateQuote = () => {
       setRandomQuote(gymQuotes[Math.floor(Math.random() * gymQuotes.length)]);
-      setQuoteKey(prevKey => prevKey + 1); 
     };
 
-    updateQuote(); 
-    const intervalId = setInterval(updateQuote, 10000); 
+    updateQuote();
+    const intervalId = setInterval(updateQuote, 10000);
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -46,50 +43,16 @@ export default function WelcomeCard({ userName, image, userId }: { userName: str
     router.push('/profile');
   };
 
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-  };
-
-  const textVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { delay: 0.5, duration: 0.5 } },
-  };
-
-  const userNameVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: { scale: 1, opacity: 1, transition: { delay: 1, duration: 0.5 } },
-  };
-
-  const quoteVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { delay: 1.5, duration: 0.5 } },
-  };
-
   return (
-    <motion.div initial="hidden" animate="visible" variants={cardVariants} className="mb-0 h-full">
+    <div className="mb-0 h-full">
       <Card className="h-full">
         <CardHeader className="flex flex-col items-center relative">
-          <motion.div variants={userNameVariants}>
-            <CardTitle className="my-3 text-center text-lg">
-              <motion.span
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.1 }}
-                transition={{ duration: 0.5, yoyo: Infinity }}
-                className="font-light"
-              >
-                Welcome back
-              </motion.span>
-              <motion.span
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.1 }}
-                transition={{ duration: 0.5, yoyo: Infinity }}
-                className="text-blue-300 font-bold block text-2xl mt-2"
-              >
-                {userName}!
-              </motion.span>
-            </CardTitle>
-          </motion.div>
+          <CardTitle className="my-3 text-center text-lg">
+            <span className="font-light text-generate-effect">Welcome back</span>
+            <span className="text-blue-300 font-bold block text-2xl mt-2 text-generate-effect">
+              {userName}!
+            </span>
+          </CardTitle>
           <div className="relative">
             <BoringAvatar
               size={100}
@@ -105,14 +68,12 @@ export default function WelcomeCard({ userName, image, userId }: { userName: str
           </div>
         </CardHeader>
         <CardContent className="text-center">
-          <motion.p key={quoteKey} initial="hidden" animate="visible" variants={quoteVariants} className="text-gray-500 italic">
-            {randomQuote}
-          </motion.p>
+          <p className="text-gray-500 italic text-generate-effect">{randomQuote}</p>
         </CardContent>
         <CardFooter className="flex justify-center">
           <Button onClick={handleProfileNavigation}>Go to Profile</Button>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 }

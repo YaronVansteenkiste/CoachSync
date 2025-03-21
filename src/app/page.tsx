@@ -167,7 +167,11 @@ export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-4 col-span-2">
-        <WelcomeCard userName={session?.user?.name || 'User'} image={session?.user?.image || 'STANDARD'} userId={session?.user?.id || ''} />
+        <WelcomeCard 
+          userName={isPending ? 'Loading...' : session?.user?.name || ''} 
+          image={session?.user?.image || 'STANDARD'} 
+          userId={session?.user?.id || ''} 
+        />
         <StrongestLiftCard userId={session?.user?.id || ''} />
         <Card className="w-full h-full">
           <CardHeader>

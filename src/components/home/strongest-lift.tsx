@@ -1,6 +1,5 @@
 import { getPersonalRecords } from '@/app/actions/personal-records/getPersonalRecords';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
@@ -49,14 +48,9 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
         {strongestLift ? (
           <div className="text-center">
             <h3 className="text-xl font-bold">{strongestLift.name}</h3>
-            <motion.p
-              className="mt-4 text-4xl font-extrabold text-blue-300"
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1.2 }}
-              transition={{ duration: 0.5, yoyo: Infinity }}
-            >
+            <p className="mt-4 text-4xl font-extrabold text-blue-300 text-generate-effect">
               {strongestLift.weight} kg
-            </motion.p>
+            </p>
             <div className="flex justify-center mt-4">
               <Image
                 src={strongestLift.image}

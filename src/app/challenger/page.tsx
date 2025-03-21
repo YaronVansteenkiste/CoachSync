@@ -2,6 +2,7 @@
 import { calculateRank, getLeaderboard, getUserData } from "@/app/actions/ranking/calculateRank";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Spotlight } from "@/components/ui/Spotlight";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 import { authClient } from "@/lib/auth/client";
@@ -71,7 +72,6 @@ export default function ChallengerPage() {
           )}
         />
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
-
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 opacity-30 rounded-full blur-3xl z-0"></div>
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-purple-500 opacity-30 rounded-full blur-3xl z-0"></div>
         <div className="absolute bottom-1/4 left-1/3 w-96 h-96 bg-red-500 opacity-30 rounded-full blur-3xl z-0"></div>

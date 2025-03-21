@@ -12,6 +12,7 @@ import { marked } from 'marked';
 import { useRouter } from "next/navigation";
 import { OpenAI } from 'openai';
 import { useEffect, useState } from 'react';
+import { getRecentResponses } from '@/app/actions/coachgpt/getRecentResponses';
 
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -37,6 +38,7 @@ export default function CoachGPTPage() {
     const [workoutPlan, setWorkoutPlan] = useState<string | null>(null);
     const [workoutsByDay, setWorkoutsByDay] = useState<any>(null);
     const [isTyping, setIsTyping] = useState<boolean>(false);
+    const [recentResponses, setRecentResponses] = useState<string[]>([]);
 
     useEffect(() => {
         async function fetchWorkouts() {
@@ -59,6 +61,17 @@ export default function CoachGPTPage() {
 
         fetchWorkouts();
     }, [isPending, session, router]);
+
+    useEffect(() => {
+        async function fetchRecentResponses() {
+            if (userId) {
+                const responses = await getRecentResponses(userId);
+                setRecentResponses(responses.map((res) => res.content));
+            }
+        }
+
+        fetchRecentResponses();
+    }, [userId]);
 
     const sanitizeWorkoutData = (workoutsByDay: any) => {
         console.log('Original workoutsByDay:', workoutsByDay);
@@ -144,6 +157,10 @@ export default function CoachGPTPage() {
         }
     };
 
+    const getFirstFourWords = (text: string) => {
+        return text.split(' ').slice(0, 4).join(' ') + (text.split(' ').length > 4 ? '...' : '');
+    };
+
     return (
         <div className="p-6 font-sans">
             <h1 className="mb-4 text-3xl font-bold">CoachGPT</h1>
@@ -193,6 +210,20 @@ export default function CoachGPTPage() {
                     )}
                 </CardContent>
             </Card>
+            <div className="mt-6">
+                <h2 className="text-xl font-bold mb-2">Recent Responses:</h2>
+                <div className="flex flex-wrap gap-2">
+                    {recentResponses.map((res, index) => (
+                        <Button
+                            key={index}
+                            className="text-sm px-2 py-1"
+                            onClick={() => setResponse(res)}
+                        >
+                            {getFirstFourWords(res)}
+                        </Button>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }

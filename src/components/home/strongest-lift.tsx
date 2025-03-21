@@ -41,7 +41,7 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
   };
 
   return (
-    <Card>
+    <Card className="w-full max-w-screen-md mx-auto px-4">
       <CardHeader>
         <CardTitle>Strongest Lift</CardTitle>
       </CardHeader>
@@ -63,7 +63,7 @@ export default function StrongestLiftCard({ userId }: { userId: string }) {
                 alt={strongestLift.name}
                 width={300}
                 height={300}
-                className="w-auto max-h-[300px] rounded"
+                className="w-auto max-h-[300px] rounded sm:max-h-[200px] sm:w-[200px] max-w-full"
               />
             </div>
           </div>

@@ -2,7 +2,6 @@
 import { calculateRank, getLeaderboard, getUserData } from "@/app/actions/ranking/calculateRank";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Spotlight } from "@/components/ui/Spotlight";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { TextGenerateEffect } from '@/components/ui/text-generate-effect';
 import { authClient } from "@/lib/auth/client";

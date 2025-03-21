@@ -1,17 +1,17 @@
 'use client'
-import { useState, useEffect } from 'react';
-import { OpenAI } from 'openai';
-import { getWorkoutsByDay } from '@/app/actions/workouts/getWorkoutsByDay';
-import { marked } from 'marked';
 import { saveResponseToDB } from '@/app/actions/coachgpt/saveResponseToDB';
+import { getWorkoutsByDay } from '@/app/actions/workouts/getWorkoutsByDay';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent, CardHeader
 } from "@/components/ui/card";
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { authClient } from "@/lib/auth/client";
+import { marked } from 'marked';
 import { useRouter } from "next/navigation";
+import { OpenAI } from 'openai';
+import { useEffect, useState } from 'react';
 
 const client = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
@@ -20,19 +20,16 @@ const client = new OpenAI({
 });
 
 const presetQuestions = [
-    "Check if my workout plan is optimal",
-    "What are the benefits of cardio workouts?",
-    "How often should I do cardio exercises?",
+    "Check if my workout plan is optimal +- 5 min.)",
+    "What are the benefits of cardio workouts? Just a brief summary",
+    "How often should I do cardio exercises? Give me a short answer",
     "What are some good cardio exercises for beginners?",
 ];
 
 export default function CoachGPTPage() {
     const {
         data: session,
-        isPending,
-        error,
-        refetch
-    } = authClient.useSession();
+        isPending    } = authClient.useSession();
     const router = useRouter();
 
     const [userId, setUserId] = useState<string | undefined>(undefined);
@@ -138,16 +135,6 @@ export default function CoachGPTPage() {
         }
     };
 
-    const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            const query = e.currentTarget.value.toLowerCase();
-            if (query.includes('check') && query.includes('workout') && query.includes('plan')) {
-                handleCheckWorkoutPlan();
-            } else {
-                handleDeepSeek(e.currentTarget.value);
-            }
-        }
-    };
 
     const handleSend = (query: string) => {
         if (query.toLowerCase().includes('check') && query.toLowerCase().includes('workout') && query.toLowerCase().includes('plan')) {
@@ -161,11 +148,11 @@ export default function CoachGPTPage() {
         <div className="p-6 font-sans">
             <h1 className="mb-4 text-3xl font-bold">CoachGPT</h1>
             <div className="mb-4">
+                <h2 className="mb-2">Preset Questions:</h2>
                 {presetQuestions.map((question, index) => (
                     <Button
                         key={index}
                         onClick={() => {
-                            const inputElement = document.querySelector('input') as HTMLInputElement;
                             handleSend(question);
                         }}
                         className="mr-2 mb-2"

@@ -17,7 +17,7 @@ export default function RootLayout({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 920);
+      setIsMobile(window.innerWidth < 950);
     };
 
     handleResize();

@@ -1,5 +1,9 @@
 # CoachSync
 
+<p align="center">
+  <img src="https://github.com/YaronVansteenkiste/Vansteenkiste-Yaron-eindopdracht/blob/master/public/images/screenshot.png?raw=true" alt="CoachSync Showcase">
+</p>
+
 🚀 **CoachSync** is your all-in-one fitness companion, designed to revolutionize the way you plan and track workouts. With AI-powered insights, progress tracking, and a competitive challenge system, CoachSync makes training more intuitive and engaging. Whether you're a beginner or a seasoned lifter, stay ahead with personalized recommendations and performance analytics.
 
 ## 🌟 Features
